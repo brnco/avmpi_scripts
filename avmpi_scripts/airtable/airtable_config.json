@@ -1,0 +1,204 @@
+{
+    "UnitAsset": {
+        "physical_asset_id": {
+            "xslx": "A",
+            "atbl": ""
+        },
+        "digital_asset_id": {
+            "xlsx": "B",
+            "atbl": ""
+        },
+        "mtd_provided_by": {
+            "xlsx": "C",
+            "atbl": ""
+        },
+        "media_type": {
+            "xlsx": "D",
+            "atbl": ""
+        },
+        "pysical_format": {
+            "xlsx": "E",
+            "atbl": ""
+        },
+        "location_prep": {
+            "xlsx": "F",
+            "atbl": ""
+        },
+        "location_delivery": {
+            "xlsx": "G",
+            "atbl": ""
+        },
+        "collection": {
+            "xlsx": "H",
+            "atbl": ""
+        },
+        "title": {
+            "xlsx": "I",
+            "atbl": ""
+        },
+        "size_value": {
+            "xlsx": "J",
+            "atbl": ""
+        },
+        "size_type": {
+            "xlsx": "K",
+            "atbl": ""
+        },
+        "secondary_asset_id": {
+            "xlsx": "L",
+            "atbl": ""
+        },
+        "part": {
+            "xlsx": "M",
+            "atbl": ""
+        },
+        "asset_barcode": {
+            "xlsx": "N",
+            "atbl": ""
+        },
+        "original_container": {
+            "xlsx": "O",
+            "atbl": ""
+        },
+        "accessories": {
+            "xlsx": "P",
+            "atbl": ""
+        },
+        "creator": {
+            "xlsx": "Q",
+            "atbl": ""
+        },
+        "date": {
+            "xlsx": "R",
+            "atbl": ""
+        },
+        "date_notes": {
+            "xlsx": "S",
+            "atbl": ""
+        },
+        "brand_stock": {
+            "xlsx": "T",
+            "atbl": ""
+        },
+        "base_substrate": {
+            "xlsx": "U",
+            "atbl": ""
+        },
+        "color": {
+            "xlsx": "V",
+            "atbl": ""
+        },
+        "sound": {
+            "xlsx": "W",
+            "atbl": ""
+        },
+        "speed": {
+            "xlsx": "X",
+            "atbl": ""
+        },
+        "speed_type": {
+            "xlsx": "Y",
+            "atbl": ""
+        },
+        "duration": {
+            "xlsx": "Z",
+            "atbl": ""
+        },
+        "content_description": {
+            "xlsx": "AA",
+            "atbl": ""
+        },
+        "item_rights_note": {
+            "xlsx": "AB",
+            "atbl": ""
+        },
+        "generation_notes": {
+            "xlsx": "AC",
+            "atbl": ""
+        },
+        "condition_notes": {
+            "xlsx": "AD",
+            "atbl": ""
+        },
+        "documentation": {
+            "xlsx": "AE",
+            "atbl": ""
+        },
+        "prior_conservation": {
+            "xlsx": "AF",
+            "atbl": ""
+        },
+        "regional_encoding": {
+            "xlsx": "AG",
+            "atbl": ""
+        },
+        "noise_reduction_encoding": {
+            "xlsx": "AH",
+            "atbl": ""
+        },
+        "general_notes": {
+            "xlsx": "AI",
+            "atbl": ""
+        }
+    },
+    "VendorAsset_Physical": {
+        "treatment_actions": {
+            "xlsx": "A",
+            "atbl": ""
+        },
+        "physical_asset_id": {
+            "xlsx": "B",
+            "atbl": ""
+        }
+    },
+    "VendorAsset_Digital": {
+        "digital_asset_id": {
+            "xlsx": "A",
+            "atbl": ""
+        },
+        "physical_asset_id": {
+            "xlsx": "B",
+            "atbl": ""
+        },
+        "physical_asset_barcode": {
+            "xlsx": "C",
+            "atbl": ""
+        },
+        "digital_container": {
+            "xlsx": "D",
+            "atbl": ""
+        },
+        "md5": {
+            "xlsx": "E",
+            "atbl": ""
+        },
+        "digital_part": {
+            "xlsx": "F",
+            "atbl": ""
+        },
+        "transfer_issue": {
+            "xlsx": "G",
+            "atbl": ""
+        },
+        "coding_history": {
+            "xlsx": "H",
+            "atbl": ""
+        },
+        "asset_creator": {
+            "xlsx": "I",
+            "atbl": ""
+        },
+        "asset_creation_date": {
+            "xlsx": "J",
+            "atbl": ""
+        },
+        "asset_size": {
+            "xlsx": "K",
+            "atbl": ""
+        },
+        "asset_duration": {
+            "xlsx": "L",
+            "atbl": ""
+        }
+    }
+}
