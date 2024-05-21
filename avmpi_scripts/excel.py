@@ -6,7 +6,7 @@ import openpyxl
 from openpyxl.utils import get_column_letter
 
 
-logger = logging.get_logger('main_logger')
+logger = logging.getLogger('main_logger')
 
 
 def load_all_worksheets(filepath):
@@ -47,4 +47,4 @@ def load_all_worksheets_dict(filepath):
                 row_data[column_letter] = cell_value
             rows_dict[row_index] = row_data
         sheets_data[sheet_name] = rows_dict
-    return rows_dict
+    return sheets_data
