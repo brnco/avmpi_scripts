@@ -126,3 +126,17 @@ class AVMPIAirtableRecord:
                 atbl_rec_remote.save()
                 time.sleep(0.1)
                 return atbl_rec_remote
+
+
+def connect_one_base(base_name):
+    '''
+    returns a connection to every table in a base
+    '''
+    logger.debug(f"connecting to all tables in {base_name}")
+    atbl_conf = config()
+    atbl_base = {}
+    atbl_base_id = atbl_conf['bases'][base_name]['id']
+    for table_name in atbl_conf['bases'][base_name]['tables']:
+        atbl_tbl = Table(api_key, atbl_base_id, table_name)
+        atbl_base.update({table_name: atbl_tbl})
+    return atbl_base
