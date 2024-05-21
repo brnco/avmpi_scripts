@@ -1,0 +1,242 @@
+{
+    "PhysicalAsset": {
+        "physical_asset_id": {
+            "xslx": "A",
+            "atbl": "Physical Asset ID"
+        },
+        "digital_asset_id": {
+            "xlsx": "B",
+            "atbl": ""
+        },
+        "mtd_provided_by": {
+            "xlsx": "C",
+            "atbl": {
+                "name": "Metadata Entered By",
+                "type": "user"
+            }
+        },
+        "media_type": {
+            "xlsx": "D",
+            "atbl": {
+                "name": "Media Type",
+                "type": "singleSelect"
+            }
+        },
+        "physical_format": {
+            "xlsx": "E",
+            "atbl": "Physical Format"
+        },
+        "location_prep": {
+            "xlsx": "F",
+            "atbl": ""
+        },
+        "location_delivery": {
+            "xlsx": "G",
+            "atbl": ""
+        },
+        "collection": {
+            "xlsx": "H",
+            "atbl": ""
+        },
+        "title": {
+            "xlsx": "I",
+            "atbl": "Title - free text"
+        },
+        "size_value": {
+            "xlsx": "J",
+            "atbl": {
+                "name": "Size",
+                "type": "number"
+            }
+        },
+        "size_type": {
+            "xlsx": "K",
+            "atbl": {
+                "name": "Size Type",
+                "type": "singleSelect"
+            }
+        },
+        "secondary_asset_id": {
+            "xlsx": "L",
+            "atbl": "Secondary Asset ID"
+        },
+        "part": {
+            "xlsx": "M",
+            "atbl": "Part"
+        },
+        "asset_barcode": {
+            "xlsx": "N",
+            "atbl": "Asset Barcode"
+        },
+        "original_container": {
+            "xlsx": "O",
+            "atbl": "Original Container"
+        },
+        "accessories": {
+            "xlsx": "P",
+            "atbl": ""
+        },
+        "creator": {
+            "xlsx": "Q",
+            "atbl": "Creator"
+        },
+        "date": {
+            "xlsx": "R",
+            "atbl": {
+                "name": "Date",
+                "type": "date"
+            }
+        },
+        "date_notes": {
+            "xlsx": "S",
+            "atbl": "Date Notes"
+        },
+        "brand_stock": {
+            "xlsx": "T",
+            "atbl": {
+                "name": "Brand-stock",
+                "type": "singleSelect"
+            }
+        },
+        "base_substrate": {
+            "xlsx": "U",
+            "atbl": {
+                "name": "Base-substrate Layer",
+                "type": "singleSelect"
+            }
+        },
+        "color": {
+            "xlsx": "V",
+            "atbl": {
+                "name": "Color",
+                "type": "multipleSelect"
+            }
+        },
+        "sound": {
+            "xlsx": "W",
+            "atbl": {
+                "name": "Sound",
+                "type": "multipleSelect"
+        },
+        "speed": {
+            "xlsx": "X",
+            "atbl": {
+                "name": "Speed",
+                "type": "number"
+            }
+        },
+        "speed_type": {
+            "xlsx": "Y",
+            "atbl": {
+                "name": "Speed Type",
+                "type": "single_select"
+            }
+        },
+        "duration": {
+            "xlsx": "Z",
+            "atbl": {
+                "name": "Duration",
+                "type": "number"
+            }
+        },
+        "content_description": {
+            "xlsx": "AA",
+            "atbl": ""
+        },
+        "item_rights_note": {
+            "xlsx": "AB",
+            "atbl": ""
+        },
+        "generation_notes": {
+            "xlsx": "AC",
+            "atbl": ""
+        },
+        "condition_notes": {
+            "xlsx": "AD",
+            "atbl": ""
+        },
+        "documentation": {
+            "xlsx": "AE",
+            "atbl": ""
+        },
+        "prior_conservation": {
+            "xlsx": "AF",
+            "atbl": ""
+        },
+        "regional_encoding": {
+            "xlsx": "AG",
+            "atbl": {
+                "name": "Regional Encoding",
+                "type": "single_select"
+            }
+        },
+        "noise_reduction_encoding": {
+            "xlsx": "AH",
+            "atbl": ""
+        },
+        "general_notes": {
+            "xlsx": "AI",
+            "atbl": ""
+        }
+    },
+    "VendorAsset_Physical": {
+        "treatment_actions": {
+            "xlsx": "A",
+            "atbl": ""
+        },
+        "physical_asset_id": {
+            "xlsx": "B",
+            "atbl": ""
+        }
+    },
+    "VendorAsset_Digital": {
+        "digital_asset_id": {
+            "xlsx": "A",
+            "atbl": ""
+        },
+        "physical_asset_id": {
+            "xlsx": "B",
+            "atbl": ""
+        },
+        "physical_asset_barcode": {
+            "xlsx": "C",
+            "atbl": ""
+        },
+        "digital_container": {
+            "xlsx": "D",
+            "atbl": ""
+        },
+        "md5": {
+            "xlsx": "E",
+            "atbl": ""
+        },
+        "digital_part": {
+            "xlsx": "F",
+            "atbl": ""
+        },
+        "transfer_issue": {
+            "xlsx": "G",
+            "atbl": ""
+        },
+        "coding_history": {
+            "xlsx": "H",
+            "atbl": ""
+        },
+        "asset_creator": {
+            "xlsx": "I",
+            "atbl": ""
+        },
+        "asset_creation_date": {
+            "xlsx": "J",
+            "atbl": ""
+        },
+        "asset_size": {
+            "xlsx": "K",
+            "atbl": ""
+        },
+        "asset_duration": {
+            "xlsx": "L",
+            "atbl": ""
+        }
+    }
+}
