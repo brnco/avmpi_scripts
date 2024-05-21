@@ -4,9 +4,9 @@
             "xslx": "A",
             "atbl": "Physical Asset ID"
         },
-        "digital_asset_id": {
+        "DigitalAsset": {
             "xlsx": "B",
-            "atbl": ""
+            "atbl": "Digital Asset"
         },
         "mtd_provided_by": {
             "xlsx": "C",
@@ -22,7 +22,7 @@
                 "type": "singleSelect"
             }
         },
-        "physical_format": {
+        "PhysicalFormat": {
             "xlsx": "E",
             "atbl": "Physical Format"
         },
@@ -34,9 +34,9 @@
             "xlsx": "G",
             "atbl": ""
         },
-        "collection": {
+        "Collection": {
             "xlsx": "H",
-            "atbl": ""
+            "atbl": "Collection"
         },
         "title": {
             "xlsx": "I",
@@ -74,7 +74,7 @@
         },
         "accessories": {
             "xlsx": "P",
-            "atbl": ""
+            "atbl": "Accessories"
         },
         "creator": {
             "xlsx": "Q",
@@ -129,7 +129,7 @@
             "xlsx": "Y",
             "atbl": {
                 "name": "Speed Type",
-                "type": "single_select"
+                "type": "singleSelect"
             }
         },
         "duration": {
@@ -141,38 +141,41 @@
         },
         "content_description": {
             "xlsx": "AA",
-            "atbl": ""
+            "atbl": "Content Description"
         },
         "item_rights_note": {
             "xlsx": "AB",
-            "atbl": ""
+            "atbl": "Item Rights Note"
         },
         "generation_notes": {
             "xlsx": "AC",
-            "atbl": ""
+            "atbl": "Generation Notes"
         },
         "condition_notes": {
             "xlsx": "AD",
-            "atbl": ""
+            "atbl": "Condition Inspection Notes"
         },
         "documentation": {
             "xlsx": "AE",
-            "atbl": ""
+            "atbl": "Documentation"
         },
         "prior_conservation": {
             "xlsx": "AF",
-            "atbl": ""
+            "atbl": "Prior Conservation Activities"
         },
         "regional_encoding": {
             "xlsx": "AG",
             "atbl": {
                 "name": "Regional Encoding",
-                "type": "single_select"
+                "type": "singleSelect"
             }
         },
         "noise_reduction_encoding": {
             "xlsx": "AH",
-            "atbl": ""
+            "atbl": {
+                "name": "Noise Reduction Encoding",
+                "type": "singleSelect"
+            }
         },
         "general_notes": {
             "xlsx": "AI",
