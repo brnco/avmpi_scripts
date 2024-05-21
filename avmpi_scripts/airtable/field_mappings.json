@@ -1,5 +1,5 @@
 {
-    "PhysicalAsset": {
+    "PhysicalAssetRecord": {
         "physical_asset_id": {
             "xslx": "A",
             "atbl": "Physical Asset ID"
@@ -182,64 +182,73 @@
             "atbl": ""
         }
     },
-    "VendorAsset_Physical": {
+    "PysicalAssetAction": {
         "treatment_actions": {
             "xlsx": "A",
             "atbl": ""
         },
-        "physical_asset_id": {
+        "PhysicalAsset": {
             "xlsx": "B",
-            "atbl": ""
+            "atbl": "Asset"
         }
     },
-    "VendorAsset_Digital": {
+    "DigitalAssetRecord": {
         "digital_asset_id": {
             "xlsx": "A",
-            "atbl": ""
+            "atbl": "Digital Asset ID"
         },
-        "physical_asset_id": {
+        "PhysicalAssetRecord": {
             "xlsx": "B",
-            "atbl": ""
+            "atbl": "Original Physical Asset"
         },
         "physical_asset_barcode": {
             "xlsx": "C",
             "atbl": ""
         },
-        "digital_container": {
+        "DigitalContainer": {
             "xlsx": "D",
-            "atbl": ""
+            "atbl": "Container"
         },
         "md5": {
             "xlsx": "E",
-            "atbl": ""
+            "atbl": "MD5 Checksum Value"
         },
         "digital_part": {
             "xlsx": "F",
-            "atbl": ""
+            "atbl": "Digital Part"
         },
         "transfer_issue": {
             "xlsx": "G",
-            "atbl": ""
+            "atbl": "Transfer Issue-Anomaly Notes"
         },
         "coding_history": {
             "xlsx": "H",
-            "atbl": ""
+            "atbl": "Coding History"
         },
         "asset_creator": {
             "xlsx": "I",
-            "atbl": ""
+            "atbl": "Asset Creator"
         },
         "asset_creation_date": {
             "xlsx": "J",
-            "atbl": ""
+            "atbl": {
+                "name": "Asset Creation Date",
+                "type": "date"
+            }
         },
         "asset_size": {
             "xlsx": "K",
-            "atbl": ""
+            "atbl": {
+                "name": "Asset Size",
+                "type": "number"
+            }
         },
         "asset_duration": {
             "xlsx": "L",
-            "atbl": ""
+            "atbl": {
+                "name": "Asset Duration",
+                "type": "number"
+            }
         }
     }
 }
