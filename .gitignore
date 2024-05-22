@@ -7,4 +7,4 @@ build/
 .tox/
 .coverage/
 .coverage
-airtable_config.json
+*airtable_config.json
