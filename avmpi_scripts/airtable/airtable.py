@@ -144,7 +144,10 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
     object class for Physical Assets at AVMPI
     '''
     field_map = get_field_map('PhysicalAssetRecord')
-    print(field_map)
+    '''
+    add every key in the field map as an attribute to the class
+    each attribute is an Airtable field with a type
+    '''
     for field, mapping in field_map.items():
         try:
             assert mapping[field]['atbl']
@@ -163,8 +166,8 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
             vars()[field] = fields.TextField(mapping['atbl'])
 
     class Meta:
-        base_id = "appn1234"
-        table_name = "ASDF"
+        base_id = "appU0Fh8L9xVZBeok"
+        table_name = "Physical Assets"
 
         @staticmethod
         def api_key():
@@ -185,8 +188,9 @@ def connect_one_base(base_name):
     logger.debug(f"connecting to all tables in {base_name}")
     atbl_conf = config()
     atbl_base = {}
-    atbl_base_id = atbl_conf['bases'][base_name]['id']
+    atbl_base_id = atbl_conf['bases'][base_name]['base_id']
+    api = Api(atbl_conf['main']['api_key'])
     for table_name in atbl_conf['bases'][base_name]['tables']:
-        atbl_tbl = Table(api_key, atbl_base_id, table_name)
+        atbl_tbl = api.table(atbl_base_id, table_name)
         atbl_base.update({table_name: atbl_tbl})
     return atbl_base
