@@ -4,6 +4,12 @@ handles testing of excel.py
 import pytest
 import pathlib
 import avmpi_scripts.excel as excel
+'''
+write a fixture here
+where the path to the worksheets changes if run with tox vs run with pytest
+good luck
+'''
+
 
 def test_load_all_worksheets_dict():
     parent_dir = pathlib.Path('__file__').parent.parent.absolute()
