@@ -5,6 +5,7 @@ import time
 import json
 import pathlib
 import logging
+import requests
 from pprint import pformat
 from pyairtable import Api, Table
 from pyairtable import metadata as atbl_mtd
@@ -66,8 +67,8 @@ class AVMPIAirtableRecord:
             try:
                 column = mapping['xlsx']
                 value = row[column]
-            except:
-                # stuff here
+            except Exception as exc:
+                raise RuntimeError
             setattr(instance, key, value)
         return instance
 
@@ -93,8 +94,8 @@ class AVMPIAirtableRecord:
             logger.warning(f"no value for primary field {primary_field_name} in record")
             logger.warning(f"using AVMPIAirtableRecord() attribute instead = {self.primary_field}")
             self_primary_field_value = self.primary_field
-        logger.debug(f"searching for existing record, with:
-                    \nprimary_key = {primary_field_name}
+        logger.debug(f"searching for existing record, with:\
+                    \nprimary_key = {primary_field_name}\
                     \nfield_value{self_primary_field_value}")
         response = atbl_tbl.all(formula=match({primary_field_name: self_primary_field_value}))
         if len(response) > 1:
@@ -121,21 +122,21 @@ class AVMPIAirtableRecord:
                 return atbl_rec_remote
             else:
                 raise RuntimeError("there was a problem saving that record")
-            except requests.exceptions.HTTPError as exc:
-                logger.exception(exc, stack_info=True)
-                err = exc.response.json()
-                result = ''
-                result = re.search(r'"[A-Za-z].*"', err['error']['message'])
-                if result:
-                    field_name = result.group().replace('"', '')
-                    attr_name = fnam[field_name]
-                    attr_value = getattr(self, attr_name)
-                    logger.warning(f"field {field_name} has a problem with value {attr_value}")
-                    logger.warning("trying to remove field and re-save")
-                    setattr(atbl_rec_remote, attr_name, '')
-                atbl_rec_remote.save()
-                time.sleep(0.1)
-                return atbl_rec_remote
+        except requests.exceptions.HTTPError as exc:
+            logger.exception(exc, stack_info=True)
+            err = exc.response.json()
+            result = ''
+            result = re.search(r'"[A-Za-z].*"', err['error']['message'])
+            if result:
+                field_name = result.group().replace('"', '')
+                attr_name = fnam[field_name]
+                attr_value = getattr(self, attr_name)
+                logger.warning(f"field {field_name} has a problem with value {attr_value}")
+                logger.warning("trying to remove field and re-save")
+                setattr(atbl_rec_remote, attr_name, '')
+            atbl_rec_remote.save()
+            time.sleep(0.1)
+            return atbl_rec_remote
 
 
 class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
@@ -143,9 +144,10 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
     object class for Physical Assets at AVMPI
     '''
     field_map = get_field_map('PhysicalAssetRecord')
-    for key, mapping in field_map.items():
+    print(field_map)
+    for field, mapping in field_map.items():
         try:
-            assert mapping['atbl']
+            assert mapping[field]['atbl']
         except KeyError:
             continue
         try:
