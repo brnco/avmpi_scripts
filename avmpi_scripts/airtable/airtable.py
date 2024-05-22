@@ -34,6 +34,18 @@ def get_api_key():
     return atbl_config['main']['api_key']
 
 
+def get_field_map(obj_type):
+    '''
+    returns dictionary of field mappings for attr <-> Airtable <-> XLSX
+    for specified object type, e.g. PhysicalAssetRecord
+    '''
+    this_dirpath = pathlib.Path(__file__).parent.absolute()
+    field_map_filepath = this_dirpath / 'field_mappings.json'
+    with open(field_map_filepath, 'r') as field_map_file:
+        field_mapping = json.load(field_map_file)
+    return field_mapping[obj_type]
+
+
 class AVMPIAirtableRecord:
     '''
     super class for the various AirtableRecord() classes we'll create later
@@ -45,17 +57,15 @@ class AVMPIAirtableRecord:
     @classmethod
     def from_xlsx(cls, row, field_map):
         '''
-        creates an Airtable record from an XLSX spreadsheet
+        creates an Airtable record from a row of an XLSX spreadsheet
         '''
         logger.debug(pformat(row))
         logger.debug(pformat(field_map))
         instance = cls()
-        for key, key_list in atbl_map.items():
+        for key, mapping in field_map.items():
             try:
-                '''
-                something like
-                value = row[key_list['xlsx']]
-                '''
+                column = mapping['xlsx']
+                value = row[column]
             except:
                 # stuff here
             setattr(instance, key, value)
@@ -83,7 +93,7 @@ class AVMPIAirtableRecord:
             logger.warning(f"no value for primary field {primary_field_name} in record")
             logger.warning(f"using AVMPIAirtableRecord() attribute instead = {self.primary_field}")
             self_primary_field_value = self.primary_field
-        logger.debug(f"searching for existing record with,
+        logger.debug(f"searching for existing record, with:
                     \nprimary_key = {primary_field_name}
                     \nfield_value{self_primary_field_value}")
         response = atbl_tbl.all(formula=match({primary_field_name: self_primary_field_value}))
@@ -93,7 +103,7 @@ class AVMPIAirtableRecord:
         elif len(response) > 0:
             logger.debug("result found, updating Airtable record with local values...")
             atbl_rec_remote = self.from_id(response[0]['id'])
-            fnam = atbl_rec_remote._field_namme_attribute_map()
+            fnam = atbl_rec_remote._field_name_attribute_map()
             for field, value in self._fields.items():
                 try:
                     attr_name = fnam[field]
@@ -126,6 +136,44 @@ class AVMPIAirtableRecord:
                 atbl_rec_remote.save()
                 time.sleep(0.1)
                 return atbl_rec_remote
+
+
+class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
+    '''
+    object class for Physical Assets at AVMPI
+    '''
+    field_map = get_field_map('PhysicalAssetRecord')
+    for key, mapping in field_map.items():
+        try:
+            assert mapping['atbl']
+        except KeyError:
+            continue
+        try:
+            field_type = mapping['atbl']['type']
+            field_name = mapping['atbl']['name']
+            if field_type == 'singleSelect':
+                vars()[field] = fields.SelectField(field_name)
+            elif field_type == 'multipleSelect':
+                vars()[field] = fields.MultipleSelectField(field_name)
+            elif field_type == 'number':
+                vars()[field] = fields.IntegerField(field_name)
+        except (KeyError, TypeError):
+            vars()[field] = fields.TextField(mapping['atbl'])
+
+    class Meta:
+        base_id = "appn1234"
+        table_name = "ASDF"
+
+        @staticmethod
+        def api_key():
+            return get_api_key()
+
+    def from_xlsx(self, row):
+        '''
+        creates an Airtable record from a row in an Excel file
+        using field mapping
+        '''
+        return super().from_xlsx(row, self.field_map)
 
 
 def connect_one_base(base_name):
