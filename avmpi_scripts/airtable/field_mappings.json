@@ -26,13 +26,13 @@
             "xlsx": "E",
             "atbl": "Physical Format"
         },
-        "location_prep": {
+        "Location_prep": {
             "xlsx": "F",
-            "atbl": ""
+            "atbl": "Locations"
         },
-        "location_delivery": {
+        "Location_delivery": {
             "xlsx": "G",
-            "atbl": ""
+            "atbl": "Locations"
         },
         "Collection": {
             "xlsx": "H",
