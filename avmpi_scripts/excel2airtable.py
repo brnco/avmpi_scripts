@@ -6,12 +6,20 @@ import argparse
 import os
 import pathlib
 import logging
+import services.excel.excel as excel
 
 
 def excel_to_airtable(kwvars):
     '''
     manages the upload of an Excel sheet to Airtable
     '''
+    logger.info("preparing to upload Excel metadata to Airtable...")
+    # get the spreadsheet
+    workbook = excel.load_all_worksheets(kwvars['input'])
+    for sheet_name, sheet_data in workbook:
+        # validate it
+        logger.debug("validating sheet against required fields...")
+        missing_fields = excel.validate_required_fields(sheet_data, kwvars['obj_type'])
 
 
 def parse_args(args):
@@ -26,6 +34,7 @@ def parse_args(args):
     else:
         kwvars['loglevel_print'] = logging.INFO
     kwvars['input'] = pathlib.Path(args.input)
+    kwvars['obj_type'] = args.obj_type
     return kwvars
 
 
@@ -47,6 +56,9 @@ def init_args():
     parser.add_argument('-i', '--input', dest='input',
                         metavar='',
                         help="the input spreadsheet to upload")
+    parser.add_argument('--obj_type', dest='obj_type', default=False, required=True,
+                        choices=['PhysicalAsset', 'DigitalAsset'],
+                        help="the type of object we're uploading metadata about")
     args = parser.parse_args()
     return args
                             

@@ -150,6 +150,7 @@
             "atbl": {
                 "name": "Sound",
                 "type": "multipleSelect"
+            }
         },
         "speed": {
             "xlsx": "X",
@@ -296,5 +297,4 @@
             }
         }
     }
-}
 }
