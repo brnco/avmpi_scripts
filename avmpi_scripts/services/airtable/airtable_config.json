@@ -1,0 +1,25 @@
+{
+    "main": {
+        "api_key": "patnGILWpzqmo18Kt.2ccc77c944601d5f2519cd06638d750c9d3d7fc4fc7044ff1aae43834f675252"
+    },
+    "bases": {
+        "Assets": {
+            "base_id": "appU0Fh8L9xVZBeok",
+            "tables": [
+                "Physical Assets",
+                "Physical Asset Action Log",
+                "Digital Assets",
+                "Containers",
+                "QC Log",
+                "ALL SI AV EQUIPMENT",
+                "Locations",
+                "Collections",
+                "Creator Role",
+                "Generations",
+                "AV Formats",
+                "All Projects",
+                "Works"
+            ]
+        }
+    }
+}

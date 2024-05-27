@@ -1,56 +1,89 @@
 {
     "PhysicalAssetRecord": {
         "physical_asset_id": {
-            "xslx": "A",
+            "xslx": {
+                "column": "A",
+                "required": true
+            },
             "atbl": "Physical Asset ID"
         },
         "DigitalAsset": {
-            "xlsx": "B",
+            "xlsx": {
+                "column": "B",
+                "required": true
+            },
             "atbl": "Digital Asset"
         },
         "mtd_provided_by": {
-            "xlsx": "C",
+            "xlsx": {
+                "column": "C",
+                "required": true
+            },
             "atbl": {
                 "name": "Metadata Entered By",
                 "type": "user"
             }
         },
         "media_type": {
-            "xlsx": "D",
+            "xlsx": {
+                "column": "D",
+                "required": true
+            },
             "atbl": {
                 "name": "Media Type",
                 "type": "singleSelect"
             }
         },
         "PhysicalFormat": {
-            "xlsx": "E",
+            "xlsx": {
+                "column": "E",
+                "required": true
+            },
             "atbl": "Physical Format"
         },
         "Location_prep": {
-            "xlsx": "F",
+            "xlsx": {
+                "column": "F",
+                "required": true
+            },
             "atbl": "Locations"
         },
         "Location_delivery": {
-            "xlsx": "G",
+            "xlsx": {
+                "column": "G",
+                "required": true
+            },
             "atbl": "Locations"
         },
         "Collection": {
-            "xlsx": "H",
+            "xlsx": {
+                "column": "H",
+                "required": true
+            },
             "atbl": "Collection"
         },
         "title": {
-            "xlsx": "I",
+            "xlsx": {
+                "column": "I",
+                "required": true
+            },
             "atbl": "Title - free text"
         },
         "size_value": {
-            "xlsx": "J",
+            "xlsx": {
+                "column": "J",
+                "required": true
+            },
             "atbl": {
                 "name": "Size",
                 "type": "number"
             }
         },
         "size_type": {
-            "xlsx": "K",
+            "xlsx": {
+                "column": "K",
+                "required": true
+            },
             "atbl": {
                 "name": "Size Type",
                 "type": "singleSelect"
@@ -202,15 +235,24 @@
             "atbl": "Original Physical Asset"
         },
         "physical_asset_barcode": {
-            "xlsx": "C",
+            "xlsx": {
+                "column": "C",
+                "required": true
+            },
             "atbl": ""
         },
         "DigitalContainer": {
-            "xlsx": "D",
+            "xlsx": {
+                "column": "D",
+                "required": true
+            },
             "atbl": "Container"
         },
         "md5": {
-            "xlsx": "E",
+            "xlsx": {
+                "column": "E",
+                "required": true
+            },
             "atbl": "MD5 Checksum Value"
         },
         "digital_part": {
@@ -222,7 +264,10 @@
             "atbl": "Transfer Issue-Anomaly Notes"
         },
         "coding_history": {
-            "xlsx": "H",
+            "xlsx": {
+                "column": "H",
+                "required": true
+            },
             "atbl": "Coding History"
         },
         "asset_creator": {
