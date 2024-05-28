@@ -79,5 +79,5 @@ def validate_required_fields(rows, obj_type):
     for row in rows:
         missing_columns = validate_row(row, required_columns)
         if missing_columns:
-            missing_values.append({"row": rows.index(row), "columns": miss_cols})
+            missing_values.append({"row": rows.index(row), "columns": missing_columns})
     return missing_values

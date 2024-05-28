@@ -30,10 +30,20 @@ def test_load_field_mapping():
     assert field_mapping['DigitalAssetRecord'] is not None
 
 
-def test_validate_required_fields():
+def test_validate_required_fields_good():
     parent_dir = pathlib.Path(__file__).parent.absolute()
     unit_filepath = parent_dir / 'Unit-AssetsMetadata-template20240209_tests.xlsx'
     workbook = excel.load_all_worksheets(unit_filepath)
     rows = [workbook['Assets-Unit-Provided-template'][5]]
     missing_fields = excel.validate_required_fields(rows, 'PhysicalAssetRecord')
     assert not missing_fields
+
+
+def test_validate_required_fields_bad():
+    parent_dir = pathlib.Path(__file__).parent.absolute()
+    unit_bad_filepath = parent_dir / 'Unit-AssetsMetadata-template20240209_missing-req-fields.xlsx'
+    workbook = excel.load_all_worksheets(unit_bad_filepath)
+    rows = [workbook['Assets-Unit-Provided-template'][5]]
+    missing_fields = excel.validate_required_fields(rows, 'PhysicalAssetRecord')
+    print(missing_fields)
+    assert missing_fields
