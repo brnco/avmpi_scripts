@@ -40,7 +40,8 @@ def load_all_worksheets(filepath):
             for column_index, cell_value in enumerate(row, start=1):
                 column_letter = get_column_letter(column_index)
                 row_data[column_letter] = cell_value
-            rows_dict[row_index] = row_data
+            if any(cell is not None for cell in row_data.values()):
+                rows_dict[row_index] = row_data
         sheets_data[sheet_name] = rows_dict
     return sheets_data
 
