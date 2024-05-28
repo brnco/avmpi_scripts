@@ -55,26 +55,59 @@ class AVMPIAirtableRecord:
     '''
     primary_field = None
 
+    def _set_link_field(self, attr_name, value):
+        '''
+        sets the values for a linked field
+        little bit of a hack but it works great
+        '''
+        atbl_api_key = get_api_key()
+        atbl_api = Api(atbl_api_key)
+        atbl_conf = config()
+        base_id = atbl_conf['bases']['Assets']['base_id']
+        if attr_name == 'DigitalAsset':
+            table_name = 'Digital Assets'
+            primary_key_name = 'Digital Asset ID'
+            the_class = DigitalAssetRecord()
+        elif attr_name == 'PhysicalAsset':
+            table_name = 'Physical Assets'
+            primary_key_name = 'Phsyical Asset ID'
+            the_class = PhysicalAssetRecord()
+        elif attr_name == 'PhysicalFormat':
+            table_name = 'AV Formats'
+            primary_key_name = 'Term'
+            the_class = PhysicalFormatRecord()
+        elif attr_name == 'Collection':
+            table_name = 'Collections'
+            primary_key_name = 'Collection Title'
+            the_class = CollectionRecord()
+        elif 'Location' in attr_name:
+            table_name = 'Locations'
+            primary_key_name = 'Name'
+            the_class = LocationRecord()
+
     @classmethod
     def from_xlsx(cls, row, field_map):
         '''
         creates an Airtable record from a row of an XLSX spreadsheet
         '''
-        logger.debug(pformat(row))
-        logger.debug(pformat(field_map))
         instance = cls()
-        for key, mapping in field_map.items():
+        link_field_attrs = ['DigitalAsset', 'PhysicalAsset', 'PhysicalFormat',
+                            'LocationPrep', 'LocationDelivery', 'Collection']
+        for attr_name, mapping in field_map.items():
             try:
-                column = mapping['xlsx']
-                value = row[column]
+                assert mapping['xlsx']
             except KeyError:
                 continue
-            except TypeError:
+            try:
                 column = mapping['xlsx']['column']
-                value = row[column]
+            except KeyError:
+                column = mapping['xlsx']
             except Exception as exc:
                 raise RuntimeError
-            setattr(instance, key, value)
+            value = row[column]
+            if attr_name in link_field_attrs:
+                value = instance._set_link_field(attr_name, value)
+            setattr(instance, attr_name, value)
         return instance
 
     def send(self):
@@ -184,6 +217,71 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
         using field mapping
         '''
         return super().from_xlsx(row, self.field_map)
+
+
+class DigitalAssetRecord(Model, CHMAirtableRecord):
+    '''
+    object class for Digital Assets records
+    '''
+    field_map = get_field_map('DigitalAssetRecord')
+    for field, mapping in field_map.items():
+        try:
+            assert mapping[field]['atbl']
+        except KeyError:
+            continue
+        try:
+            field_type = mapping['atbl']['type']
+            field_name = mapping['atbl']['name']
+            if field_type == 'singleSelect':
+                vars()[field] = fields.SelectField(field_name)
+            elif field_type == 'multipleSelect':
+                vars()[field] = fields.MultipleSelectField(field_name)
+            elif fiedl_type == 'number':
+                vars()[field] = fields.IntegerField(field_name)
+        except KeyError:
+            vars()[field] = fields.TextField(mapping['atbl'])
+
+    class Meta:
+        base_id = 'appU0Fh8L9xVZBeok'
+        table_name = 'Digital Assets'
+
+        @staticmethod
+        def api_key():
+            return get_api_key()
+
+    def from_xlsx(self, row):
+        '''
+        creates an Airtable record from a row in an Excel file
+        using field mapping
+        '''
+        return super().from_xlsx(row, self.field_map)
+
+
+class PhysicalAssetActionRecord(Model, CHMAirtableRecord):
+    '''
+    object class for Physical Assets at AVMPI
+    '''
+    field_map = get_field_map('PhysicalAssetActionRecord')
+    for field_mapping in field_map.items():
+        vars()[field] = fields.TextField(mapping['atbl'])
+
+    class Meta:
+        base_id = 'appU0Fh8L9xVZBeok'
+        table_name = 'Physical Asset Action Log'
+
+        @staticmethod
+        def api_key():
+            return get_api_key()
+
+    def from_xlsx(self, row):
+        '''
+        creates an Airtable record from a row in an Excel file
+        using field mapping
+        '''
+        return super().from_xlsx(row, self.field_map)
+
+
+class
 
 
 def connect_one_base(base_name):

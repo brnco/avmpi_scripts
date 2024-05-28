@@ -41,14 +41,14 @@
             },
             "atbl": "Physical Format"
         },
-        "Location_prep": {
+        "LocationPrep": {
             "xlsx": {
                 "column": "F",
                 "required": true
             },
             "atbl": "Locations"
         },
-        "Location_delivery": {
+        "LocationDelivery": {
             "xlsx": {
                 "column": "G",
                 "required": true
@@ -216,7 +216,7 @@
             "atbl": ""
         }
     },
-    "PysicalAssetAction": {
+    "PysicalAssetActionRecord": {
         "treatment_actions": {
             "xlsx": "A",
             "atbl": ""
