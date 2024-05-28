@@ -40,8 +40,8 @@ def get_field_map(obj_type):
     returns dictionary of field mappings for attr <-> Airtable <-> XLSX
     for specified object type, e.g. PhysicalAssetRecord
     '''
-    this_dirpath = pathlib.Path(__file__).parent.absolute()
-    field_map_filepath = this_dirpath / 'field_mappings.json'
+    module_dirpath = pathlib.Path(__file__).parent.parent.parent.absolute()
+    field_map_filepath = module_dirpath / 'field_mappings.json'
     with open(field_map_filepath, 'r') as field_map_file:
         field_mapping = json.load(field_map_file)
     return field_mapping[obj_type]
@@ -66,6 +66,11 @@ class AVMPIAirtableRecord:
         for key, mapping in field_map.items():
             try:
                 column = mapping['xlsx']
+                value = row[column]
+            except KeyError:
+                continue
+            except TypeError:
+                column = mapping['xlsx']['column']
                 value = row[column]
             except Exception as exc:
                 raise RuntimeError
