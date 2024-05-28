@@ -5,6 +5,7 @@ import logging
 import pathlib
 import json
 import openpyxl
+from pprint import pformat
 from openpyxl.utils import get_column_letter
 
 
@@ -63,13 +64,10 @@ def validate_required_fields(rows, obj_type):
     '''
     logger.debug("validating worksheet...")
     _field_map = load_field_mappings()
-    print(_field_map)
     field_map = _field_map[obj_type]
     required_columns = []
     missing_values = []
     for field, mapping in field_map.items():
-        print(f"field: {field}")
-        print(f"mapping: {mapping}")
         try:
             assert mapping['xlsx']['required']
         except (KeyError, TypeError):
