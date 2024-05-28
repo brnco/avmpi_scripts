@@ -100,7 +100,7 @@ class AVMPIAirtableRecord:
                 continue
             try:
                 column = mapping['xlsx']['column']
-            except KeyError:
+            except TypeError:
                 column = mapping['xlsx']
             except Exception as exc:
                 raise RuntimeError
@@ -219,7 +219,7 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
         return super().from_xlsx(row, self.field_map)
 
 
-class DigitalAssetRecord(Model, CHMAirtableRecord):
+class DigitalAssetRecord(Model, AVMPIAirtableRecord):
     '''
     object class for Digital Assets records
     '''
@@ -257,12 +257,12 @@ class DigitalAssetRecord(Model, CHMAirtableRecord):
         return super().from_xlsx(row, self.field_map)
 
 
-class PhysicalAssetActionRecord(Model, CHMAirtableRecord):
+class PhysicalAssetActionRecord(Model, AVMPIAirtableRecord):
     '''
     object class for Physical Assets at AVMPI
     '''
     field_map = get_field_map('PhysicalAssetActionRecord')
-    for field_mapping in field_map.items():
+    for field, mapping in field_map.items():
         vars()[field] = fields.TextField(mapping['atbl'])
 
     class Meta:
@@ -281,7 +281,62 @@ class PhysicalAssetActionRecord(Model, CHMAirtableRecord):
         return super().from_xlsx(row, self.field_map)
 
 
-class
+class PhysicalFormatRecord(Model, AVMPIAirtableRecord):
+    '''
+    bare-bones class for representing Physical Formats
+    in their syncd table in Assets base
+    '''
+    class Meta:
+        base_id = 'appU0Fh8L9xVZBeok'
+        table_name = 'AV Formats'
+
+        @staticmethod
+        def api_key():
+            return get_api_key()
+
+
+class CollectionRecord(Model, AVMPIAirtableRecord):
+    '''
+    bare-bones class for representing Collections
+    in their syncd table in Assets base
+    '''
+    class Meta:
+        base_id = 'appU0Fh8L9xVZBeok'
+        table_name = 'Collections'
+
+        @staticmethod
+        def api_key():
+            return get_api_key()
+
+
+class LocationRecord(Model, AVMPIAirtableRecord):
+    '''
+    bare-bones class for representing Locations
+    in their syncd table in Assets base
+    '''
+    class Meta:
+        base_id = 'appU0Fh8L9xVZBeok'
+        table_name = 'Locations'
+
+        @staticmethod
+        def api_key():
+            return get_api_key()
+
+
+def set_link_fields():
+    '''
+    adds class attributes for above classes for link fields
+    happens here + called globally because
+    we need all of the Record() classes definied before linking them
+    '''
+    setattr(PhysicalAssetRecord, 'Digital Asset', fields.LinkField('Digital Asset', DigitalAssetRecord))
+    setattr(PhysicalAssetRecord, 'PhysicalFormat', fields.LinkField('Physical Format', PhysicalFormatRecord))
+    setattr(PhysicalAssetRecord, 'LocationPrep', fields.LinkField('Current Location', LocationRecord))
+    setattr(PhysicalAssetRecord, 'LocationDelivery', fields.LinkField('Delivery Location', LocationRecord))
+    setattr(PhysicalAssetRecord, 'Collection', fields.LinkField('Collection', CollectionRecord))
+
+
+set_link_fields()
 
 
 def connect_one_base(base_name):

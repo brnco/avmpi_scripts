@@ -46,14 +46,14 @@
                 "column": "F",
                 "required": true
             },
-            "atbl": "Locations"
+            "atbl": "Current Location"
         },
         "LocationDelivery": {
             "xlsx": {
                 "column": "G",
                 "required": true
             },
-            "atbl": "Locations"
+            "atbl": "Delivery Location"
         },
         "Collection": {
             "xlsx": {
@@ -216,7 +216,7 @@
             "atbl": ""
         }
     },
-    "PysicalAssetActionRecord": {
+    "PhysicalAssetActionRecord": {
         "treatment_actions": {
             "xlsx": "A",
             "atbl": ""
