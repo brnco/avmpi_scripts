@@ -12,6 +12,17 @@ from openpyxl.utils import get_column_letter
 logger = logging.getLogger('main_logger')
 
 
+def config():
+    '''
+    loads config from config file located in same directory
+    '''
+    parent_dirpath = pathlib.Path(__file__).parent.absolute()
+    excel_conf_filepath = parent_dirpath / "excel_config.json"
+    with open(excel_conf_filepath, "r") as excel_conf_file:
+        excel_conf = json.load(excel_conf_file)
+    return excel_conf
+
+
 def load_field_mappings():
     '''
     loads field mappings from config
@@ -23,6 +34,22 @@ def load_field_mappings():
     return field_mapping
 
 
+def get_workbook_name_short(filepath):
+    '''
+    returns the shorthand for the workbook name from the path
+    we use this to map to start/ stop ror and column indexes
+    '''
+    conf = config()
+    shortname = ''
+    for key in conf.keys():
+        if key in str(filepath):
+            shortname = key
+            break
+    if not shortname:
+        raise RuntimeError(f"Unable to get shorthand name for input Excel file: {filepath}")
+    return key
+
+
 def load_all_worksheets(filepath):
     '''
     loads all worksheets from xlsx at filepath into dictionary
@@ -31,12 +58,21 @@ def load_all_worksheets(filepath):
     of key: value paires where the key is the column letter and value is cell value
     '''
     logger.debug(f"loading Excel spreadsheet from {filepath}...")
+    workbook_shortname = get_workbook_name_short(filepath)
     workbook = openpyxl.load_workbook(filepath)
+    conf = config()
     sheets_data = {}
     for sheet_name in workbook.sheetnames:
+        try:
+            if conf[workbook_shortname][sheet_name]['skip']:
+                continue
+        except KeyError:
+            pass
         sheet = workbook[sheet_name]
+        print(conf[workbook_shortname])
+        start_row = conf[workbook_shortname][sheet_name]["first_row_with_data"]
         rows_dict = {}
-        for row_index, row in enumerate(sheet.iter_rows(values_only=True), start=1):
+        for row_index, row in enumerate(sheet.iter_rows(values_only=True, min_row=start_row), start=1):
             row_data = {}
             for column_index, cell_value in enumerate(row, start=1):
                 column_letter = get_column_letter(column_index)

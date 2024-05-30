@@ -1,0 +1,21 @@
+{
+    "Unit-AssetsMetadata": {
+        "Assets-Unit-Provided-template": {
+            "first_row_with_data": 5,
+            "last_column_with_data": "AI"
+        },
+        "PhysicalFormats": {
+            "skip": true
+        }
+    },
+    "Vendor-AssetsMetadata": {
+        "Physical Assets": {
+            "first_row_with_data": 4,
+            "last_column_with_data": "B"
+        },
+        "Digital Assets": {
+            "first_row_with_data": 4,
+            "last_column_with_data": "L"
+        }
+    }
+}
