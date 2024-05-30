@@ -34,20 +34,24 @@ def load_field_mappings():
     return field_mapping
 
 
-def get_workbook_name_short(filepath):
+def get_workbook_type(workbook):
     '''
-    returns the shorthand for the workbook name from the path
-    we use this to map to start/ stop ror and column indexes
+    looks through the sheets in teh workbook to determine if this is
+    Unit metadata or Vendor metadata
     '''
     conf = config()
-    shortname = ''
-    for key in conf.keys():
-        if key in str(filepath):
-            shortname = key
-            break
-    if not shortname:
-        raise RuntimeError(f"Unable to get shorthand name for input Excel file: {filepath}")
-    return key
+    unit_sheetnames = list(conf['Unit-AssetsMetadata'].keys())
+    vendor_sheetnames = list(conf['Vendor-AssetsMetadata'].keys())
+    workbook_sheetnames = [sheet for sheet in workbook.sheetnames]
+    #print(f"unit_sheetnames: {unit_sheetnames}")
+    #print(f"vendor_sheetnames: {vendor_sheetnames}")
+    #print(f"workbook_sheetnames: {workbook_sheetnames}")
+    if unit_sheetnames == workbook_sheetnames:
+        return 'Unit-AssetsMetadata'
+    elif vendor_sheetnames == workbook_sheetnames:
+        return 'Vendor-AssetsMetadata'
+    else:
+        return None
 
 
 def load_all_worksheets(filepath):
@@ -58,19 +62,20 @@ def load_all_worksheets(filepath):
     of key: value paires where the key is the column letter and value is cell value
     '''
     logger.debug(f"loading Excel spreadsheet from {filepath}...")
-    workbook_shortname = get_workbook_name_short(filepath)
     workbook = openpyxl.load_workbook(filepath)
+    workbook_type = get_workbook_type(workbook)
+    if not workbook_type:
+        raise RuntimeError("could not identify if workbook is Vendor or Unit type")
     conf = config()
     sheets_data = {}
     for sheet_name in workbook.sheetnames:
         try:
-            if conf[workbook_shortname][sheet_name]['skip']:
+            if conf[workbook_type][sheet_name]['skip']:
                 continue
         except KeyError:
             pass
         sheet = workbook[sheet_name]
-        print(conf[workbook_shortname])
-        start_row = conf[workbook_shortname][sheet_name]["first_row_with_data"]
+        start_row = conf[workbook_type][sheet_name]["first_row_with_data"]
         rows_dict = {}
         for row_index, row in enumerate(sheet.iter_rows(values_only=True, min_row=start_row), start=1):
             row_data = {}
