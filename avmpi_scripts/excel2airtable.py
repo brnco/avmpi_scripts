@@ -19,12 +19,13 @@ def excel_to_airtable(kwvars):
     # get the spreadsheet
     workbook = excel.load_all_worksheets(kwvars['input'])
     for sheet_name, rows in workbook.items():
-        # validate it
-        logger.debug("validating sheet against required fields...")
-        missing_fields = excel.validate_required_fields(list(rows.values()), kwvars['obj_type'])
-        if missing_fields:
-            logger.error(pformat(missing_fields))
-            raise ValueError("Excel file is missing required fields")
+        if not kwvars['override_excel_validation']:
+            # validate it
+            logger.debug("validating sheet against required fields...")
+            missing_fields = excel.validate_required_fields(list(rows.values()), kwvars['record_type'])
+            if missing_fields:
+                logger.error(pformat(missing_fields))
+                raise ValueError("Excel file is missing required fields")
 
 
 def parse_args(args):
@@ -39,11 +40,15 @@ def parse_args(args):
     else:
         kwvars['loglevel_print'] = logging.INFO
     kwvars['input'] = pathlib.Path(args.input)
-    kwvars['obj_type'] = args.obj_type
-    if kwvars['obj_type'] == 'DigitalAsset':
+    kwvars['record_type'] = args.record_type
+    if kwvars['record_type'] == 'DigitalAsset':
         kwvars['sheets'] = ['Physical Assets', 'Digital Assets']
-    elif kwvars['obj_type'] == 'Physical Asset':
+    elif kwvars['record_type'] == 'Physical Asset':
         kwvars['sheets'] = ['Assets-Unit-Provided-template']
+    if args.oev:
+        kwvars['override_excel_validation'] = True
+    else:
+        kwvars['override_excel_validation'] = False
     return kwvars
 
 
@@ -63,9 +68,11 @@ def init_args():
     parser.add_argument('-i', '--input', dest='input',
                         metavar='',
                         help="the input spreadsheet to upload")
-    parser.add_argument('--obj_type', dest='obj_type', default=False, required=True,
+    parser.add_argument('--record_type', dest='record_type', default=False, required=True,
                         choices=['PhysicalAssetRecord', 'DigitalAssetRecord'],
                         help="the type of object we're uploading metadata about")
+    parser.add_argument('--override_excel_validation', dest='oev', action='store_true', default=False, 
+                        help="overrides the validation of required fields for input Excel xlsx files")
     args = parser.parse_args()
     return args
                             
