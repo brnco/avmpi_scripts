@@ -201,8 +201,10 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
     '''
     for field, mapping in field_map.items():
         '''
+        I DON'T KNWO WHY THIS DOESN'T WORK
+        ASSERTION ERROR
         try:
-            assert mapping[field]['atbl']
+            assert mapping['atbl']
         except KeyError:
             continue
         '''
