@@ -55,6 +55,16 @@ class AVMPIAirtableRecord:
     '''
     primary_field = None
 
+    def _fix_problem_attrs(self, attr_name, value):
+        '''
+        for some of these we need an extra layer of formatting
+        '''
+        if attr_name == 'asset_barcode':
+            value = str(int(value))
+        if attr_name == 'color' or attr_name == 'sound':
+            value = [value]
+        return value
+
     def _set_link_field(self, attr_name, value):
         '''
         sets the values for a linked field
@@ -91,6 +101,7 @@ class AVMPIAirtableRecord:
         creates an Airtable record from a row of an XLSX spreadsheet
         '''
         instance = cls()
+        problem_attrs = ['asset_barcode', 'color', 'sound']
         link_field_attrs = ['DigitalAsset', 'PhysicalAsset', 'PhysicalFormat',
                             'LocationPrep', 'LocationDelivery', 'Collection']
         for attr_name, mapping in field_map.items():
@@ -105,6 +116,8 @@ class AVMPIAirtableRecord:
             except Exception as exc:
                 raise RuntimeError
             value = row[column]
+            if attr_name in problem_attrs:
+                value = instance._fix_problem_attrs(attr_name, value)
             if attr_name in link_field_attrs:
                 value = instance._set_link_field(attr_name, value)
             setattr(instance, attr_name, value)
@@ -187,10 +200,12 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
     each attribute is an Airtable field with a type
     '''
     for field, mapping in field_map.items():
+        '''
         try:
             assert mapping[field]['atbl']
         except KeyError:
             continue
+        '''
         try:
             field_type = mapping['atbl']['type']
             field_name = mapping['atbl']['name']
@@ -200,6 +215,8 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
                 vars()[field] = fields.MultipleSelectField(field_name)
             elif field_type == 'number':
                 vars()[field] = fields.IntegerField(field_name)
+            elif field_type == 'float':
+                vars()[field] = fields.FloatField(field_name)
         except (KeyError, TypeError):
             vars()[field] = fields.TextField(mapping['atbl'])
 

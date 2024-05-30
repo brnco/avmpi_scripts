@@ -76,7 +76,7 @@
             },
             "atbl": {
                 "name": "Size",
-                "type": "number"
+                "type": "float"
             }
         },
         "size_type": {
