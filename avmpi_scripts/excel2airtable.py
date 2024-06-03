@@ -41,10 +41,6 @@ def parse_args(args):
         kwvars['loglevel_print'] = logging.INFO
     kwvars['input'] = pathlib.Path(args.input)
     kwvars['record_type'] = args.record_type
-    if kwvars['record_type'] == 'DigitalAsset':
-        kwvars['sheets'] = ['Physical Assets', 'Digital Assets']
-    elif kwvars['record_type'] == 'Physical Asset':
-        kwvars['sheets'] = ['Assets-Unit-Provided-template']
     if args.oev:
         kwvars['override_excel_validation'] = True
     else:

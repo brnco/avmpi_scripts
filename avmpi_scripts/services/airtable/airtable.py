@@ -63,6 +63,8 @@ class AVMPIAirtableRecord:
             value = str(int(value))
         if attr_name == 'color' or attr_name == 'sound':
             value = [value]
+        if attr_name == 'secondary_asset_id':
+            value = str(value)
         return value
 
     def _set_link_field(self, attr_name, value):
@@ -94,6 +96,10 @@ class AVMPIAirtableRecord:
             table_name = 'Locations'
             primary_key_name = 'Name'
             the_class = LocationRecord()
+        elif 'Container' in attr_name:
+            table_name = 'Containers'
+            primary_key_name = 'Container Name'
+            the_class = ContainerRecord()
 
     @classmethod
     def from_xlsx(cls, row, field_map):
@@ -101,7 +107,7 @@ class AVMPIAirtableRecord:
         creates an Airtable record from a row of an XLSX spreadsheet
         '''
         instance = cls()
-        problem_attrs = ['asset_barcode', 'color', 'sound']
+        problem_attrs = ['asset_barcode', 'color', 'sound', 'secondary_asset_id']
         link_field_attrs = ['DigitalAsset', 'PhysicalAsset', 'PhysicalFormat',
                             'LocationPrep', 'LocationDelivery', 'Collection']
         for attr_name, mapping in field_map.items():
@@ -120,7 +126,13 @@ class AVMPIAirtableRecord:
                 value = instance._fix_problem_attrs(attr_name, value)
             if attr_name in link_field_attrs:
                 value = instance._set_link_field(attr_name, value)
-            setattr(instance, attr_name, value)
+            try:
+                setattr(instance, attr_name, value)
+            except TypeError as exc:
+                logger.error(attr_name)
+                logger.error(value)
+                logger.error(exc, stack_info=True)
+                raise RuntimeError
         return instance
 
     def send(self):
@@ -216,7 +228,7 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
             elif field_type == 'multipleSelect':
                 vars()[field] = fields.MultipleSelectField(field_name)
             elif field_type == 'number':
-                vars()[field] = fields.IntegerField(field_name)
+                vars()[field] = fields.NumberField(field_name)
             elif field_type == 'float':
                 vars()[field] = fields.FloatField(field_name)
         except (KeyError, TypeError):
@@ -342,17 +354,32 @@ class LocationRecord(Model, AVMPIAirtableRecord):
             return get_api_key()
 
 
+class ContainerRecord(Model, AVMPIAirtableRecord):
+    '''
+    bare-bones class for representing Containers
+    '''
+    class Meta:
+        base_id = 'appU0Fh8L9xVZBeok'
+        table_name = 'Containers'
+        
+        @staticmethod
+        def api_key():
+            return get_api_key() 
+
+
 def set_link_fields():
     '''
     adds class attributes for above classes for link fields
     happens here + called globally because
     we need all of the Record() classes definied before linking them
     '''
-    setattr(PhysicalAssetRecord, 'Digital Asset', fields.LinkField('Digital Asset', DigitalAssetRecord))
+    setattr(PhysicalAssetRecord, 'DigitalAsset', fields.LinkField('Digital Asset', DigitalAssetRecord))
     setattr(PhysicalAssetRecord, 'PhysicalFormat', fields.LinkField('Physical Format', PhysicalFormatRecord))
     setattr(PhysicalAssetRecord, 'LocationPrep', fields.LinkField('Current Location', LocationRecord))
     setattr(PhysicalAssetRecord, 'LocationDelivery', fields.LinkField('Delivery Location', LocationRecord))
     setattr(PhysicalAssetRecord, 'Collection', fields.LinkField('Collection', CollectionRecord))
+    setattr(DigitalAssetRecord, 'PhysicalAsset', fields.LinkField('Original Physical Asset', PhysicalAssetRecord))
+    setattr(DigitalAssetRecord, 'DigitalContainer', fields.LinkField('Container', ContainerRecord))
 
 
 set_link_fields()

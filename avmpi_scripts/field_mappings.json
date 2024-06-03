@@ -76,7 +76,7 @@
             },
             "atbl": {
                 "name": "Size",
-                "type": "float"
+                "type": "number"
             }
         },
         "size_type": {
@@ -231,7 +231,7 @@
             "xlsx": "A",
             "atbl": "Digital Asset ID"
         },
-        "PhysicalAssetRecord": {
+        "PhysicalAsset": {
             "xlsx": "B",
             "atbl": "Original Physical Asset"
         },
