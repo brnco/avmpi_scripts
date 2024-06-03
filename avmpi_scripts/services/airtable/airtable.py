@@ -6,6 +6,7 @@ import json
 import pathlib
 import logging
 import requests
+from datetime import timedelta
 from pprint import pformat
 from pyairtable import Api, Table
 from pyairtable import metadata as atbl_mtd
@@ -59,12 +60,23 @@ class AVMPIAirtableRecord:
         '''
         for some of these we need an extra layer of formatting
         '''
-        if attr_name == 'asset_barcode':
+        if 'asset_barcode' in attr_name:
             value = str(int(value))
         if attr_name == 'color' or attr_name == 'sound':
             value = [value]
         if attr_name == 'secondary_asset_id':
             value = str(value)
+        if attr_name == 'asset_duration':
+            if ':' in value:
+                time_components = value.split(':')
+                if len(time_components) == 2:
+                    # assume mm:ss
+                    minutes, seconds = map(int, value.split(':'))
+                    value = timedelta(minutes=minutes, seconds=seconds)
+                elif len(time_components) == 3:
+                    # hh:mm:ss
+                    hours, minutes, seconds = map(int, value.split(':'))
+                    value = timedelta(hours=hours, minutes=minutes, seconds=seconds)
         return value
 
     def _set_link_field(self, attr_name, value):
@@ -107,9 +119,11 @@ class AVMPIAirtableRecord:
         creates an Airtable record from a row of an XLSX spreadsheet
         '''
         instance = cls()
-        problem_attrs = ['asset_barcode', 'color', 'sound', 'secondary_asset_id']
+        problem_attrs = ['asset_barcode', 'color', 'sound', 'asset_duration',
+                         'secondary_asset_id', 'physical_asset_barcode']
         link_field_attrs = ['DigitalAsset', 'PhysicalAsset', 'PhysicalFormat',
-                            'LocationPrep', 'LocationDelivery', 'Collection']
+                            'LocationPrep', 'LocationDelivery', 'Collection',
+                            'Container']
         for attr_name, mapping in field_map.items():
             try:
                 assert mapping['xlsx']
@@ -256,10 +270,12 @@ class DigitalAssetRecord(Model, AVMPIAirtableRecord):
     '''
     field_map = get_field_map('DigitalAssetRecord')
     for field, mapping in field_map.items():
+        '''
         try:
             assert mapping[field]['atbl']
         except KeyError:
             continue
+        '''
         try:
             field_type = mapping['atbl']['type']
             field_name = mapping['atbl']['name']
@@ -267,9 +283,11 @@ class DigitalAssetRecord(Model, AVMPIAirtableRecord):
                 vars()[field] = fields.SelectField(field_name)
             elif field_type == 'multipleSelect':
                 vars()[field] = fields.MultipleSelectField(field_name)
-            elif fiedl_type == 'number':
-                vars()[field] = fields.IntegerField(field_name)
-        except KeyError:
+            elif field_type == 'number':
+                vars()[field] = fields.NumberField(field_name)
+            elif field_type == 'duration':
+                vars()[field] = fields.DurationField(field_name)
+        except (KeyError, TypeError):
             vars()[field] = fields.TextField(mapping['atbl'])
 
     class Meta:
@@ -379,7 +397,7 @@ def set_link_fields():
     setattr(PhysicalAssetRecord, 'LocationDelivery', fields.LinkField('Delivery Location', LocationRecord))
     setattr(PhysicalAssetRecord, 'Collection', fields.LinkField('Collection', CollectionRecord))
     setattr(DigitalAssetRecord, 'PhysicalAsset', fields.LinkField('Original Physical Asset', PhysicalAssetRecord))
-    setattr(DigitalAssetRecord, 'DigitalContainer', fields.LinkField('Container', ContainerRecord))
+    setattr(DigitalAssetRecord, 'Container', fields.LinkField('Container', ContainerRecord))
 
 
 set_link_fields()

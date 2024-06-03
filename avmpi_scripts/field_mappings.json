@@ -242,7 +242,7 @@
             },
             "atbl": ""
         },
-        "DigitalContainer": {
+        "Container": {
             "xlsx": {
                 "column": "D",
                 "required": true
@@ -293,7 +293,7 @@
             "xlsx": "L",
             "atbl": {
                 "name": "Asset Duration",
-                "type": "number"
+                "type": "duration"
             }
         }
     }
