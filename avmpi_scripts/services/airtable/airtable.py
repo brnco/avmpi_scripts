@@ -166,15 +166,12 @@ class AVMPIAirtableRecord:
                 raise RuntimeError
         return instance
 
-    def send(self):
-        '''
-        primary means of updating / inserting
 
-        looks up value of primary field in Airtable
-        if found, updates record
-        if not found, creates a new record
+    def _get_primary_key_info(self):
         '''
-        logger.info("sending local record to Airtable...")
+        for send()
+        gets primary key name and value
+        '''
         atbl_tbl = self.get_table()
         atbl_tbl_schema = atbl_mtd.get_table_schema(atbl_tbl)
         primary_field_id = atbl_tbl_schema['primaryFieldId']
@@ -188,9 +185,13 @@ class AVMPIAirtableRecord:
             logger.warning(f"no value for primary field {primary_field_name} in record")
             logger.warning(f"using AVMPIAirtableRecord() attribute instead = {self.primary_field}")
             self_primary_field_value = self.primary_field
-        logger.debug(f"searching for existing record, with:\
-                    \nprimary_key = {primary_field_name}\
-                    \nfield_value{self_primary_field_value}")
+        return primary_field_name, self_primary_field_value
+
+    def _search_on_primary_field(self, primary_field_name, self_primary_field_value):
+        '''
+        searches for self_primary_field_value in primary_field_name
+        '''
+        atbl_tbl = self.get_table()
         response = atbl_tbl.all(formula=match({primary_field_name: self_primary_field_value}))
         if len(response) > 1:
             logger.error(f"too many results for {self_primary_field_value} in field {primary_field_name}")
@@ -198,15 +199,30 @@ class AVMPIAirtableRecord:
         elif len(response) > 0:
             logger.debug("result found, updating Airtable record with local values...")
             atbl_rec_remote = self.from_id(response[0]['id'])
-            for field, value in self._fields.items():
-                try:
-                    atbl_rec_remote._fields[field] = value
-                except (KeyError, TypeError) as exc:
-                    logger.exception(exc, stack_info=True)
-                    continue
         else:
             logger.debug("no results found")
-            atbl_rec_remote = self
+            return None
+        return atbl_rec_remote
+
+    def _fill_remote_rec_from_local(self, atbl_rec_remote):
+        '''
+        ugh we can't just assign a record id to an unsaved record
+        and have that overwrite a remote record
+        so instead we do this,
+        where we take the remote record and fill it with local values
+        '''
+        for field, value in self._fields.items():
+            try:
+                atbl_rec_remote._fields[field] = value
+            except (KeyError, TypeError) as exc:
+                logger.exception(exc, stack_info=True)
+                continue
+        return atbl_rec_remote
+
+    def _save_rec(atbl_rec):
+        '''
+        actually save the damn record
+        '''
         try:
             atbl_rec_remote.save()
             time.sleep(0.1)
@@ -216,19 +232,28 @@ class AVMPIAirtableRecord:
                 raise RuntimeError("there was a problem saving that record")
         except requests.exceptions.HTTPError as exc:
             logger.exception(exc, stack_info=True)
-            err = exc.response.json()
-            result = ''
-            result = re.search(r'"[A-Za-z].*"', err['error']['message'])
-            if result:
-                field_name = result.group().replace('"', '')
-                attr_name = fnam[field_name]
-                attr_value = getattr(self, attr_name)
-                logger.warning(f"field {field_name} has a problem with value {attr_value}")
-                logger.warning("trying to remove field and re-save")
-                setattr(atbl_rec_remote, attr_name, '')
-            atbl_rec_remote.save()
-            time.sleep(0.1)
-            return atbl_rec_remote
+            raise RuntimeError("there was a problem saving that record")
+
+    def send(self):
+        '''
+        primary means of updating / inserting
+
+        looks up value of primary field in Airtable
+        if found, updates record
+        if not found, creates a new record
+        '''
+        logger.info("sending local record to Airtable...")
+        primary_field_name, self_primary_field_value = self._get_primary_key_info()
+        logger.debug(f"searching for existing record, with:\
+                    \nprimary_key = {primary_field_name}\
+                    \nfield_value{self_primary_field_value}")
+        atbl_rec_remote = self._search_on_primary_field(
+                            primary_field_name, self_primary_field_value)
+        if atbl_rec_remote:
+            atbl_rec_remote = self._fill_remote_rec_from_local(atbl_rec_remote)
+        else:
+            atbl_rec_remote = self
+        atbl_rec_remote = _save_rec(atbl_rec_remote)
 
 
 class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
@@ -397,6 +422,20 @@ class PhysicalAssetActionRecord(Model, AVMPIAirtableRecord):
 class PhysicalFormatRecord(Model, AVMPIAirtableRecord):
     '''
     bare-bones class for representing Physical Formats
+    in their origin table in Metadata base
+    '''
+    class Meta:
+        base_id = 'appWtd175HSokQgQP'
+        table_name = 'AV Formats'
+
+        @staticmethod
+        def api_key():
+            return get_api_key()
+
+
+class PhysicalFormatRecordSyncd(Model, AVMPIAirtableRecord):
+    '''
+    bare-bones class for representing Physical Formats
     in their syncd table in Assets base
     '''
     class Meta:
@@ -411,6 +450,20 @@ class PhysicalFormatRecord(Model, AVMPIAirtableRecord):
 class CollectionRecord(Model, AVMPIAirtableRecord):
     '''
     bare-bones class for representing Collections
+    in their origin table in Metadata base
+    '''
+    class Meta:
+        base_id = 'appWtd175HSokQgQP'
+        table_name = 'Collections'
+
+        @staticmethod
+        def api_key():
+            return get_api_key()
+
+
+class CollectionRecordSyncd(Model, AVMPIAirtableRecord):
+    '''
+    bare-bones class for representing Collections
     in their syncd table in Assets base
     '''
     class Meta:
@@ -423,6 +476,21 @@ class CollectionRecord(Model, AVMPIAirtableRecord):
 
 
 class LocationRecord(Model, AVMPIAirtableRecord):
+    '''
+    bare-bones class for representing Locations
+    in their origin table in Metadata base
+    '''
+    class Meta:
+        base_id = 'appWtd175HSokQgQP'
+        table_name = 'Locations'
+
+        @staticmethod
+        def api_key():
+            return get_api_key()
+
+
+
+class LocationRecordSyncd(Model, AVMPIAirtableRecord):
     '''
     bare-bones class for representing Locations
     in their syncd table in Assets base
