@@ -8,8 +8,26 @@ import pathlib
 import logging
 from pprint import pformat
 import make_log
+import services.airtable.airtable as airtable
 import services.excel.excel as excel
 
+
+def get_record_type_from_sheet(sheet_name):
+    '''
+    with given sheet name
+    return name of class of related Airtable record
+    '''
+    if sheet_name == 'Physical Assets':
+        record_type = 'PhysicalAssetActionRecord'
+    elif sheet_name == 'Digital Assets':
+        record_type = 'DigitalAssetRecord'
+    elif sheet_name == 'Assets-Unit-Provided-template':
+        record_type = 'PhysicalAssetRecord'
+    else:
+        raise RuntimeError("there was a problem identifying relevant record type, " 
+                            "probably because of the sheet name")
+    return record_type
+    
 
 def excel_to_airtable(kwvars):
     '''
@@ -19,13 +37,37 @@ def excel_to_airtable(kwvars):
     # get the spreadsheet
     workbook = excel.load_all_worksheets(kwvars['input'])
     for sheet_name, rows in workbook.items():
+        record_type = get_record_type_from_sheet(sheet_name)
         if not kwvars['override_excel_validation']:
             # validate it
             logger.debug("validating sheet against required fields...")
-            missing_fields = excel.validate_required_fields(list(rows.values()), kwvars['record_type'])
+            missing_fields = excel.validate_required_fields(list(rows.values()), record_type)
             if missing_fields:
                 logger.error(pformat(missing_fields))
                 raise ValueError("Excel file is missing required fields")
+            logger.debug("validation complete")
+        # parse each row to AirtableRecord() object
+        logger.info("parsing row to Airtable record...")
+        for row in rows:
+            logger.debug(pformat(rows[row]))
+            if record_type == "PhysicalAssetRecord":
+                atbl_rec = airtable.PhysicalAssetRecord().from_xlsx(rows[row])
+                atbl_recs = [atbl_rec]
+            elif record_type == "DigitalAssetRecord":
+                atbl_rec = airtable.DigitalAssetRecord().from_xlsx(rows[row])
+                atbl_recs = [atbl_rec]
+            else:
+                atbl_rec = airtable.PhysicalAssetActionRecord().from_xlsx(rows[row])
+                # Physical Asset Action rows can have multiple records
+                atbl_recs = airtable.parse_asset_actions(atbl_rec)
+            logger.info("sending record to Airtable...")
+            for atbl_rec in atbl_recs:
+                atbl_rec.send()
+                '''
+                you need to figure out how to save when a record si linked to an unsaved record
+                and also handle when there's a record that links to a sync'd table,
+                and the value in the record doesn't exist in the sync
+                '''
 
 
 def parse_args(args):
@@ -40,7 +82,6 @@ def parse_args(args):
     else:
         kwvars['loglevel_print'] = logging.INFO
     kwvars['input'] = pathlib.Path(args.input)
-    kwvars['record_type'] = args.record_type
     if args.oev:
         kwvars['override_excel_validation'] = True
     else:
@@ -64,9 +105,6 @@ def init_args():
     parser.add_argument('-i', '--input', dest='input',
                         metavar='',
                         help="the input spreadsheet to upload")
-    parser.add_argument('--record_type', dest='record_type', default=False, required=True,
-                        choices=['PhysicalAssetRecord', 'DigitalAssetRecord'],
-                        help="the type of object we're uploading metadata about")
     parser.add_argument('--override_excel_validation', dest='oev', action='store_true', default=False, 
                         help="overrides the validation of required fields for input Excel xlsx files")
     args = parser.parse_args()

@@ -43,9 +43,6 @@ def get_workbook_type(workbook):
     unit_sheetnames = list(conf['Unit-AssetsMetadata'].keys())
     vendor_sheetnames = list(conf['Vendor-AssetsMetadata'].keys())
     workbook_sheetnames = [sheet for sheet in workbook.sheetnames]
-    #print(f"unit_sheetnames: {unit_sheetnames}")
-    #print(f"vendor_sheetnames: {vendor_sheetnames}")
-    #print(f"workbook_sheetnames: {workbook_sheetnames}")
     if unit_sheetnames == workbook_sheetnames:
         return 'Unit-AssetsMetadata'
     elif vendor_sheetnames == workbook_sheetnames:
@@ -99,13 +96,13 @@ def validate_row(row, required_columns):
     return missing_values
 
 
-def validate_required_fields(rows, obj_type):
+def validate_required_fields(rows, record_type):
     '''
     uses rules in field_mappings.json to validate sheet_dict
     '''
     logger.debug("validating worksheet...")
     _field_map = load_field_mappings()
-    field_map = _field_map[obj_type]
+    field_map = _field_map[record_type]
     required_columns = []
     missing_values = []
     for field, mapping in field_map.items():

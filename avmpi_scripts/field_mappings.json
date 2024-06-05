@@ -217,9 +217,12 @@
         }
     },
     "PhysicalAssetActionRecord": {
-        "treatment_actions": {
+        "activity_type": {
             "xlsx": "A",
-            "atbl": ""
+            "atbl": {
+                "name": "Activity Type",
+                "type": "singleSelect"
+            }
         },
         "PhysicalAsset": {
             "xlsx": "B",

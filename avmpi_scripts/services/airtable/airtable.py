@@ -94,7 +94,7 @@ class AVMPIAirtableRecord:
             the_class = DigitalAssetRecord()
         elif attr_name == 'PhysicalAsset':
             table_name = 'Physical Assets'
-            primary_key_name = 'Phsyical Asset ID'
+            primary_key_name = 'Physical Asset ID'
             the_class = PhysicalAssetRecord()
         elif attr_name == 'PhysicalFormat':
             table_name = 'AV Formats'
@@ -112,6 +112,23 @@ class AVMPIAirtableRecord:
             table_name = 'Containers'
             primary_key_name = 'Container Name'
             the_class = ContainerRecord()
+        atbl_tbl = atbl_api.table(base_id, table_name)
+        result = atbl_tbl.all(formula=match({primary_key_name: value}))
+        if not result:
+            logger.warning(f"table: {table_name}\nprimary key: {primary_key_name}\nvalue: {value} did not return any results initially")
+            logger.warning("creating bare record to link to...")
+            try:
+                result = atbl_tbl.create({primary_key_name: value})
+                result = [result]
+            except requests.exceptions.HTTPError as exc:
+                logger.error("the script encountered an error while trying to create a bare linked record")
+                logger.error("this was likely because the value does not exist in a linked, sync'd table")
+                logger.error(f"linked table: {table_name}")
+                logger.error(f"value: {value}")
+                # logger.exception(exc, stack_info=True)
+                raise RuntimeError("please ensure the value above exists in the table and try again")
+        atbl_rec = the_class.from_id(result[0]['id'])
+        return [atbl_rec]
 
     @classmethod
     def from_xlsx(cls, row, field_map):
@@ -166,7 +183,7 @@ class AVMPIAirtableRecord:
                 primary_field_name = field['name']
                 break
         try:
-            self.primary_field_value = self._fields[primary_field_name]
+            self_primary_field_value = self._fields[primary_field_name]
         except KeyError:
             logger.warning(f"no value for primary field {primary_field_name} in record")
             logger.warning(f"using AVMPIAirtableRecord() attribute instead = {self.primary_field}")
@@ -181,11 +198,9 @@ class AVMPIAirtableRecord:
         elif len(response) > 0:
             logger.debug("result found, updating Airtable record with local values...")
             atbl_rec_remote = self.from_id(response[0]['id'])
-            fnam = atbl_rec_remote._field_name_attribute_map()
             for field, value in self._fields.items():
                 try:
-                    attr_name = fnam[field]
-                    setattr(atbl_rec_remote, attr_name, value)
+                    atbl_rec_remote._fields[field] = value
                 except (KeyError, TypeError) as exc:
                     logger.exception(exc, stack_info=True)
                     continue
@@ -312,7 +327,19 @@ class PhysicalAssetActionRecord(Model, AVMPIAirtableRecord):
     '''
     field_map = get_field_map('PhysicalAssetActionRecord')
     for field, mapping in field_map.items():
-        vars()[field] = fields.TextField(mapping['atbl'])
+        try:
+            field_type = mapping['atbl']['type']
+            field_name = mapping['atbl']['name']
+            if field_type == 'singleSelect':
+                vars()[field] = fields.SelectField(field_name)
+            elif field_type == 'multipleSelect':
+                vars()[field] = fields.MultipleSelectField(field_name)
+            elif field_type == 'number':
+                vars()[field] = fields.NumberField(field_name)
+            elif field_type == 'float':
+                vars()[field] = fields.FloatField(field_name)
+        except (KeyError, TypeError):
+            vars()[field] = fields.TextField(mapping['atbl'])
 
     class Meta:
         base_id = 'appU0Fh8L9xVZBeok'
@@ -328,6 +355,43 @@ class PhysicalAssetActionRecord(Model, AVMPIAirtableRecord):
         using field mapping
         '''
         return super().from_xlsx(row, self.field_map)
+
+    def send(self):
+        '''
+        because the primary key field for thsi table is a formula
+        we can't search on it
+        so, we make our own custom search here
+        '''
+        atbl_tbl = self.get_table()
+        filter_formula = "AND({Asset} = '" + self.PhysicalAsset[0].physical_asset_id + "', "\
+                "{Activity Type} = '" + self.activity_type + "')"
+        input(filter_formula)
+        response = atbl_tbl.all(formula=filter_formula)
+        if len(response) > 1:
+            logger.error(f"too many results for {self_primary_field_value} in field {primary_field_name}")
+            raise ValueError("duplicate records in table")
+        elif len(response) > 0:
+            logger.debug("result found, updating Airtable record with local values...")
+            atbl_rec_remote = self.from_id(response[0]['id'])
+            for field, value in self._fields.items():
+                try:
+                    atbl_rec_remote._fields[field] = value
+                except (KeyError, TypeError) as exc:
+                    logger.exception(exc, stack_info=True)
+                    continue
+        else:
+            logger.debug("no results found")
+            atbl_rec_remote = self
+        try:
+            atbl_rec_remote.save()
+            time.sleep(0.1)
+            if atbl_rec_remote.exists():
+                return atbl_rec_remote
+            else:
+                raise RuntimeError("there was a problem saving that record")
+        except Exception as exc:
+            logger.exception(exc, stack_info=True)
+            raise RuntimeError("there was a problem saving that record")
 
 
 class PhysicalFormatRecord(Model, AVMPIAirtableRecord):
@@ -398,6 +462,7 @@ def set_link_fields():
     setattr(PhysicalAssetRecord, 'Collection', fields.LinkField('Collection', CollectionRecord))
     setattr(DigitalAssetRecord, 'PhysicalAsset', fields.LinkField('Original Physical Asset', PhysicalAssetRecord))
     setattr(DigitalAssetRecord, 'Container', fields.LinkField('Container', ContainerRecord))
+    setattr(PhysicalAssetActionRecord, 'PhysicalAsset', fields.LinkField('Asset', PhysicalAssetRecord))
 
 
 set_link_fields()
@@ -416,3 +481,32 @@ def connect_one_base(base_name):
         atbl_tbl = api.table(atbl_base_id, table_name)
         atbl_base.update({table_name: atbl_tbl})
     return atbl_base
+
+
+def parse_asset_actions(atbl_rec):
+    '''
+    uh each action in the log gets its own record
+    so the initial Asset Action Record might need to be several records
+    contains 0-n actions in that raw conversion, etc. and so on
+    '''
+    logger.debug("parsing asset action record for each action...")
+    atbl_recs = []
+    actions = getattr(atbl_rec, 'activity_type')
+    physical_asset = getattr(atbl_rec, 'PhysicalAsset')
+    if not actions:
+        actions = 'A-D Transfer'
+    elif ';' in actions:
+        actions = actions.split(';')
+    elif ',' in actions:
+        actions = actions.split(',')
+    for action in actions:
+        atbl_rec_par = PhysicalAssetRecord()
+        atbl_rec_par.physical_asset_id = physical_asset[0].physical_asset_id
+        # atbl_rec_par['PhysicalAsset'] = getattr(atbl_rec, 'PhysicalAsset')
+        atbl_rec_paar = PhysicalAssetActionRecord(
+                activity_type=action,
+                PhysicalAsset=[atbl_rec_par])
+        atbl_recs.append(atbl_rec_paar)
+        # atbl_rec_paar['activity_type'] = [action]
+        # atbl_rec_paar['PhysicalAsset'] = atbl_rec_par
+    return atbl_recs
