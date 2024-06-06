@@ -1,7 +1,7 @@
 {
     "PhysicalAssetRecord": {
         "physical_asset_id": {
-            "xslx": {
+            "xlsx": {
                 "column": "A",
                 "required": true
             },
@@ -12,7 +12,7 @@
                 "column": "B",
                 "required": true
             },
-            "atbl": "Digital Asset"
+            "atbl": "Digital Assets"
         },
         "mtd_provided_by": {
             "xlsx": {
@@ -39,35 +39,55 @@
                 "column": "E",
                 "required": true
             },
-            "atbl": "Physical Format"
+            "atbl": {
+                "name": "Physical Format",
+                "type": "linked_syncd",
+                "origin_base_id": "appWtd175HSokQgQP",
+                "origin_table_name": "AV Formats"
+            }
         },
         "LocationPrep": {
             "xlsx": {
                 "column": "F",
                 "required": true
             },
-            "atbl": "Current Location"
+            "atbl": {
+                "name": "Current Location",
+                "type": "linked_syncd",
+                "origin_base_id": "appWtd175HSokQgQP",
+                "origin_table_name": "Locations"
+            }
         },
         "LocationDelivery": {
             "xlsx": {
                 "column": "G",
                 "required": true
             },
-            "atbl": "Delivery Location"
+            "atbl": {
+                "name": "Delivery Location",
+                "type": "linked_syncd",
+                "origin_base_id": "appWtd175HSokQgQP",
+                "origin_table_name": "Locations"
+            }
         },
         "Collection": {
             "xlsx": {
                 "column": "H",
                 "required": true
             },
-            "atbl": "Collection"
+            "atbl": {
+                "name": "Collection",
+                "type": "linked_syncd",
+                "origin_base_id": "appWtd175HSokQgQP",
+                "origin_table_name": "Collections"
+            }
         },
         "title": {
             "xlsx": {
                 "column": "I",
                 "required": true
             },
-            "atbl": "Title - free text"
+            "atbl": "Title - Free text"
         },
         "size_value": {
             "xlsx": {
@@ -134,7 +154,7 @@
         "base_substrate": {
             "xlsx": "U",
             "atbl": {
-                "name": "Base-substrate Layer",
+                "name": "Base-Substrate Layer",
                 "type": "singleSelect"
             }
         },

@@ -14,5 +14,6 @@ base_Assets = api.base(base_id_Assets)
 tables = base_Assets.tables()
 for atbl_tbl in tables:
     for field in atbl_tbl.schema().fields:
-        input(pformat(field))
+        if field.type == 'multipleRecordLinks':
+            input(pformat(field))
 
