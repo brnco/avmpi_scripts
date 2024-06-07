@@ -69,6 +69,8 @@ class AVMPIAirtableRecord:
                 value = str(int(value))
             except:
                 pass
+        if attr_name == 'asset_size':
+            value = float(value)
         if attr_name == 'asset_duration':
             if ':' in value:
                 time_components = value.split(':')
@@ -145,7 +147,7 @@ class AVMPIAirtableRecord:
         creates an Airtable record from a row of an XLSX spreadsheet
         '''
         instance = cls()
-        problem_attrs = ['asset_barcode', 'color', 'sound', 'asset_duration',
+        problem_attrs = ['asset_barcode', 'color', 'sound', 'asset_duration', 'asset_size',
                          'secondary_asset_id', 'physical_asset_barcode']
         link_field_attrs = ['DigitalAsset', 'PhysicalAsset', 'PhysicalFormat',
                             'LocationPrep', 'LocationDelivery', 'Collection',
