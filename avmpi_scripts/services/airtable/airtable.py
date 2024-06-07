@@ -131,7 +131,9 @@ class AVMPIAirtableRecord:
                 logger.debug(f"searching for {digital_asset} in field {primary_key_name} in table {table_name}")
                 result = atbl_tbl.all(formula=match({primary_key_name: digital_asset}))
                 if not result:
-                    logger.debug("no result found, creating bare record to link to")
+                    logger.warning(f"while parsing linked field, no record was in linked table for:")
+                    logger.warning(f"\ndigital_asset: {digital_asset}\nprimary_key_name: {primary_key_name}\ntable: {table_name}")
+                    logger.warning("creating bare record to link to")
                     result = atbl_tbl.create({primary_key_name: digital_asset})
                     result = [result]
                     logger.debug(f"result: {result[0]}")

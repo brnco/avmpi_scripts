@@ -74,7 +74,7 @@ def load_all_worksheets(filepath):
         sheet = workbook[sheet_name]
         start_row = conf[workbook_type][sheet_name]["first_row_with_data"]
         rows_dict = {}
-        for row_index, row in enumerate(sheet.iter_rows(values_only=True, min_row=start_row), start=1):
+        for row_index, row in enumerate(sheet.iter_rows(values_only=True, min_row=start_row), start=start_row):
             row_data = {}
             for column_index, cell_value in enumerate(row, start=1):
                 column_letter = get_column_letter(column_index)

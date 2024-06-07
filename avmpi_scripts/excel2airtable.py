@@ -35,7 +35,7 @@ def process_rows(rows, record_type, kwvars):
     '''
     processes row(s) in sheet
     '''
-    if not kwvars['override_excel_validation']:
+    if kwvars['input_validation']:
         # validate it
         logger.debug("validating sheet against required fields...")
         missing_fields = excel.validate_required_fields(list(rows.values()), record_type)
@@ -62,13 +62,14 @@ def process_rows(rows, record_type, kwvars):
             logger.info(pformat(atbl_rec.__dict__))
             input("press any key to upload")
             atbl_rec.send()
+            logger.info("row processed successfully")
 
 
 def excel_to_airtable(kwvars):
     '''
     manages the upload of an Excel sheet to Airtable
     '''
-    logger.info("preparing to upload Excel metadata to Airtable...")
+    logger.info("preparing to parse Excel metadata to Airtable...")
     # get the spreadsheet
     workbook = excel.load_all_worksheets(kwvars['input'])
     if kwvars['sheet']:
@@ -79,7 +80,10 @@ def excel_to_airtable(kwvars):
         if not kwvars['row']:
             rows = sheet
         else:
-            rows = {kwvars['row']: sheet[kwvars['row']]}
+            try:
+                rows = {kwvars['row']: sheet[kwvars['row']]}
+            except KeyError:
+                raise RuntimeError(f"specified row {kwvars['row']} is empty")
         process_rows(rows, record_type, kwvars)
     else:
         for sheet_name, rows in workbook.items():
@@ -102,10 +106,10 @@ def parse_args(args):
     else:
         kwvars['loglevel_print'] = logging.INFO
     kwvars['input'] = pathlib.Path(args.input)
-    if args.oev:
-        kwvars['override_excel_validation'] = True
+    if args.no_validation:
+        kwvars['input_validation'] = False
     else:
-        kwvars['override_excel_validation'] = False
+        kwvars['input_validation'] = True
     kwvars['sheet'] = args.sheet
     kwvars['row'] = args.row
     return kwvars
@@ -127,7 +131,7 @@ def init_args():
     parser.add_argument('-i', '--input', dest='input',
                         metavar='',
                         help="the input spreadsheet to upload")
-    parser.add_argument('--override_excel_validation', dest='oev', action='store_true', default=False, 
+    parser.add_argument('--no_validation', dest='no_validation', action='store_true', default=False, 
                         help="overrides the validation of required fields for input Excel xlsx files")
     parser.add_argument('-s', '--sheet', dest='sheet', default=None,
                         help="uploads an individual sheet by name, e.g. Assets-Unit-Provided-template")
@@ -147,6 +151,7 @@ def main():
     global logger
     logger = make_log.init_log(loglevel_print=kwvars['loglevel_print'])
     excel_to_airtable(kwvars)
+    logger.info("excel2airtable has completed successfully")
 
 if __name__ == "__main__":
     main()
