@@ -118,9 +118,6 @@ class AVMPIAirtableRecord:
             primary_key_name = 'Container Name'
             the_class = ContainerRecord()
         atbl_tbl = atbl_api.table(base_id, table_name)
-        print(atbl_tbl.name)
-        print(primary_key_name)
-        print(value)
         result = atbl_tbl.all(formula=match({primary_key_name: value}))
         if not result:
             logger.warning(f"table: {table_name}\nprimary key: {primary_key_name}\nvalue: {value} did not return any results initially")
@@ -165,10 +162,6 @@ class AVMPIAirtableRecord:
                 column = mapping['xlsx']
             except Exception as exc:
                 raise RuntimeError
-            print(f"attr_name: {attr_name}")
-            print(f"column: {column}")
-            print(f"value: {row[column]}")
-            #input("yo")
             value = row[column]
             if not value:
                 continue
@@ -184,56 +177,6 @@ class AVMPIAirtableRecord:
                 logger.error(exc, stack_info=True)
                 raise RuntimeError
         return instance
-
-    def _verify_sync_field_origins(self, atbl_rec):
-        '''
-        for a given Airtable record, in JSON not Model object
-        identify all the fields that come from a syncd table
-        verify that field values exist in syncd table origin
-        '''
-        logger.debug("verifying sync field origins")
-        atbl_conf = config()
-        avmpi_attrs = atbl_rec['fields'].keys()
-        # compare list of attributes in this atbl_rec to list in self.field_map
-        # need just the field[type] == linked_syncd
-        for attr in field_map:
-            for avmpi_attr in avmpi_attrs:
-                try:
-                    logger.debug("trying something")
-                    if avmpi_attr == field_map[attr]['atbl']['name'] \
-                        and field_map[attr]['atbl']['type'] == 'linked_syncd':
-                            origin_base_id = mapped_attr['atbl']['origin_base_id']
-                            origin_table_name = mapped_attr['atbl']['origin_table_name']
-                            logger.debug("origins identified, connecting to origin base/ table...")
-                            api_key = get_api_key()
-                            api = Api(api_key)
-                            origin_base = api.base(origin_base_id)
-                            origin_table = base.table(origin_table_name)
-                            logger.debug("connections complete, getting primary key info...")
-                            origin_table_schema = atbl_mtd.get_table_schema(origin_table)
-                            primary_field_id = origin_table_schema['primaryFieldId']
-                            for field in origin_table_schema['fields']:
-                                if field['id'] == primary_field_id:
-                                    primary_field_name = field['name']
-                                    break
-                            value = atbl_rec['fields'][avmpi_attr]
-                            logger.debug(f"searching origin table: {origin_table_name}")
-                            logger.debug(f"for value: {value}")
-                            logger.debug(f"in field: {primary_field_name}")
-                            response = origin_table.all(formula=
-                                                        match({primary_field_name: value}))
-                            if len(response) > 1:
-                                raise RuntimeError("too many results, duplicate records in table")
-                            elif len(response) > 0:
-                                logger.debug("1 result found, no updates needed")
-                            else:
-                                origin_table.create({primary_field_name: value})
-                                time.sleep(1)
-                except KeyError:
-                    continue
-                except Exception as exc:
-                    logger.exception(exc, stack_info=True)
-                    raise RuntimeError("Who even knows at this point")
 
     def _get_primary_key_info(self):
         '''
@@ -322,7 +265,6 @@ class AVMPIAirtableRecord:
             atbl_rec_remote = self._fill_remote_rec_from_local(atbl_rec_remote)
         else:
             atbl_rec_remote = self
-        # self._verify_sync_table_origins(atbl_rec_remote)
         atbl_rec_remote = self._save_rec(atbl_rec_remote)
         return atbl_rec_remote
 
@@ -337,14 +279,6 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
     each attribute is an Airtable field with a type
     '''
     for field, mapping in field_map.items():
-        '''
-        I DON'T KNWO WHY THIS DOESN'T WORK
-        ASSERTION ERROR
-        try:
-            assert mapping['atbl']
-        except KeyError:
-            continue
-        '''
         try:
             field_type = mapping['atbl']['type']
             field_name = mapping['atbl']['name']
@@ -383,12 +317,6 @@ class DigitalAssetRecord(Model, AVMPIAirtableRecord):
     '''
     field_map = get_field_map('DigitalAssetRecord')
     for field, mapping in field_map.items():
-        '''
-        try:
-            assert mapping[field]['atbl']
-        except KeyError:
-            continue
-        '''
         try:
             field_type = mapping['atbl']['type']
             field_name = mapping['atbl']['name']
