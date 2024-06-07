@@ -117,6 +117,28 @@ class AVMPIAirtableRecord:
             table_name = 'Containers'
             primary_key_name = 'Container Name'
             the_class = ContainerRecord()
+        if isinstance(self, PhysicalAssetRecord) and table_name == 'Digital Assets':
+            atbl_recs = []
+            if ',' in value:
+                digital_assets = value.split(',')
+            elif ';' in value:
+                digital_assets = value.split(';')
+            else:
+                digital_assets = [value.strip()]
+            digital_assets = [da.strip() for da in digital_assets]
+            for digital_asset in digital_assets:
+                atbl_tbl = atbl_api.table(base_id, table_name)
+                logger.debug(f"searching for {digital_asset} in field {primary_key_name} in table {table_name}")
+                result = atbl_tbl.all(formula=match({primary_key_name: digital_asset}))
+                if not result:
+                    logger.debug("no result found, creating bare record to link to")
+                    result = atbl_tbl.create({primary_key_name: digital_asset})
+                    result = [result]
+                    logger.debug(f"result: {result[0]}")
+                atbl_rec = the_class.from_id(result[0]['id'])
+                logger.debug(pformat(atbl_rec))
+                atbl_recs.append(atbl_rec)
+            return atbl_recs
         atbl_tbl = atbl_api.table(base_id, table_name)
         result = atbl_tbl.all(formula=match({primary_key_name: value}))
         if not result:
@@ -163,11 +185,7 @@ class AVMPIAirtableRecord:
                 column = mapping['xlsx']
             except Exception as exc:
                 raise RuntimeError
-            try:
-                value = row[column]
-            except:
-                print(f"column: {column}")
-                input("yo")
+            value = row[column]
             if not value:
                 continue
             if attr_name in problem_attrs:
@@ -177,8 +195,8 @@ class AVMPIAirtableRecord:
             try:
                 setattr(instance, attr_name, value)
             except TypeError as exc:
-                logger.error(attr_name)
-                logger.error(value)
+                logger.error(f"attr_name: {attr_name}")
+                logger.error(f"value: {value}")
                 logger.error(exc, stack_info=True)
                 raise RuntimeError
         return instance
@@ -587,3 +605,4 @@ def parse_asset_actions(atbl_rec):
                 PhysicalAsset=[atbl_rec_par])
         atbl_recs.append(atbl_rec_paar)
     return atbl_recs
+
