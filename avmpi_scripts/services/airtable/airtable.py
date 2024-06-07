@@ -134,6 +134,7 @@ class AVMPIAirtableRecord:
                 raise RuntimeError("please ensure the value above exists in the table and try again")
         try:
             atbl_rec = the_class.from_id(result[0]['id'])
+            atbl_rec.save()
         except:
             print(the_class)
         return [atbl_rec]
@@ -162,7 +163,11 @@ class AVMPIAirtableRecord:
                 column = mapping['xlsx']
             except Exception as exc:
                 raise RuntimeError
-            value = row[column]
+            try:
+                value = row[column]
+            except:
+                print(f"column: {column}")
+                input("yo")
             if not value:
                 continue
             if attr_name in problem_attrs:
@@ -203,6 +208,9 @@ class AVMPIAirtableRecord:
         searches for self_primary_field_value in primary_field_name
         '''
         atbl_tbl = self.get_table()
+        logger.debug(f"searching table {atbl_tbl.name}")
+        logger.debug(f"in field {primary_field_name}")
+        logger.debug(f"for value {self_primary_field_value}")
         response = atbl_tbl.all(formula=match({primary_field_name: self_primary_field_value}))
         if len(response) > 1:
             logger.error(f"too many results for {self_primary_field_value} in field {primary_field_name}")
@@ -391,7 +399,6 @@ class PhysicalAssetActionRecord(Model, AVMPIAirtableRecord):
         atbl_tbl = self.get_table()
         filter_formula = "AND({Asset} = '" + self.PhysicalAsset[0].physical_asset_id + "', "\
                 "{Activity Type} = '" + self.activity_type + "')"
-        input(filter_formula)
         response = atbl_tbl.all(formula=filter_formula)
         if len(response) > 1:
             logger.error(f"too many results for {self_primary_field_value} in field {primary_field_name}")
@@ -408,6 +415,7 @@ class PhysicalAssetActionRecord(Model, AVMPIAirtableRecord):
         else:
             logger.debug("no results found")
             atbl_rec_remote = self
+        logger.debug(atbl_rec_remote.__dict__)
         try:
             atbl_rec_remote.save()
             time.sleep(0.1)
@@ -562,20 +570,20 @@ def parse_asset_actions(atbl_rec):
     atbl_recs = []
     actions = getattr(atbl_rec, 'activity_type')
     physical_asset = getattr(atbl_rec, 'PhysicalAsset')
+    atbl_rec_par = PhysicalAssetRecord()
+    atbl_rec_par.physical_asset_id = physical_asset[0].physical_asset_id
+    atbl_rec_par = atbl_rec_par.send()
     if not actions:
-        actions = 'A-D Transfer'
+        actions = ['A-D Transfer']
     elif ';' in actions:
         actions = actions.split(';')
     elif ',' in actions:
         actions = actions.split(',')
+    else:
+        actions = [actions]
     for action in actions:
-        atbl_rec_par = PhysicalAssetRecord()
-        atbl_rec_par.physical_asset_id = physical_asset[0].physical_asset_id
-        # atbl_rec_par['PhysicalAsset'] = getattr(atbl_rec, 'PhysicalAsset')
         atbl_rec_paar = PhysicalAssetActionRecord(
-                activity_type=action,
+                activity_type=action.strip(),
                 PhysicalAsset=[atbl_rec_par])
         atbl_recs.append(atbl_rec_paar)
-        # atbl_rec_paar['activity_type'] = [action]
-        # atbl_rec_paar['PhysicalAsset'] = atbl_rec_par
     return atbl_recs
