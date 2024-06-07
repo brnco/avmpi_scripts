@@ -83,7 +83,7 @@ def excel_to_airtable(kwvars):
             try:
                 rows = {kwvars['row']: sheet[kwvars['row']]}
             except KeyError:
-                raise RuntimeError(f"specified row {kwvars['row']} is empty")
+                raise RuntimeError(f"specified row {kwvars['row']} is empty or does not exist")
         process_rows(rows, record_type, kwvars)
     else:
         for sheet_name, rows in workbook.items():
