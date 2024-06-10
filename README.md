@@ -24,7 +24,9 @@ Navigate to the top level directory of this repo and run the following command
 
 Now that we have our virtual environment initialized, we need to run it so that we can install our dependencies and run the scripts.
 
-To do that on Mac, run `source venv/bin/activate`
+To do that on Mac, run
+
+`source venv/bin/activate`
 
 4. Install dependencies
 
