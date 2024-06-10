@@ -14,15 +14,12 @@
             },
             "atbl": "Digital Assets"
         },
-        "mtd_provided_by": {
+        "mtd_submitted_by": {
             "xlsx": {
                 "column": "C",
                 "required": true
             },
-            "atbl": {
-                "name": "Metadata Entered By",
-                "type": "user"
-            }
+            "atbl": "Metadata Submitted By"
         },
         "media_type": {
             "xlsx": {
