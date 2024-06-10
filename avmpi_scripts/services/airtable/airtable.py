@@ -311,9 +311,9 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
             field_type = mapping['atbl']['type']
             field_name = mapping['atbl']['name']
             if field_type == 'singleSelect':
-                vars()[field] = fields.SelectField(field_name)
+                vars()[field] = fields.SelectField(field_name, typecast=False)
             elif field_type == 'multipleSelect':
-                vars()[field] = fields.MultipleSelectField(field_name)
+                vars()[field] = fields.MultipleSelectField(field_name, typecast=False)
             elif field_type == 'number':
                 vars()[field] = fields.NumberField(field_name)
             elif field_type == 'float':
@@ -349,9 +349,9 @@ class DigitalAssetRecord(Model, AVMPIAirtableRecord):
             field_type = mapping['atbl']['type']
             field_name = mapping['atbl']['name']
             if field_type == 'singleSelect':
-                vars()[field] = fields.SelectField(field_name)
+                vars()[field] = fields.SelectField(field_name, typecast=False)
             elif field_type == 'multipleSelect':
-                vars()[field] = fields.MultipleSelectField(field_name)
+                vars()[field] = fields.MultipleSelectField(field_name, typecast=False)
             elif field_type == 'number':
                 vars()[field] = fields.NumberField(field_name)
             elif field_type == 'duration':
@@ -385,9 +385,9 @@ class PhysicalAssetActionRecord(Model, AVMPIAirtableRecord):
             field_type = mapping['atbl']['type']
             field_name = mapping['atbl']['name']
             if field_type == 'singleSelect':
-                vars()[field] = fields.SelectField(field_name)
+                vars()[field] = fields.SelectField(field_name, typecast=False)
             elif field_type == 'multipleSelect':
-                vars()[field] = fields.MultipleSelectField(field_name)
+                vars()[field] = fields.MultipleSelectField(field_name, typecast=False)
             elif field_type == 'number':
                 vars()[field] = fields.NumberField(field_name)
             elif field_type == 'float':
