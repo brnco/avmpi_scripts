@@ -74,7 +74,7 @@ class AVMPIAirtableRecord:
                 pass
         if attr_name == 'asset_size':
             value = float(value)
-        if attr_name == 'date_value':
+        if 'date' in attr_name:
             value = datetime.strptime(value, '%Y-%m-%d')
         if attr_name == 'asset_duration':
             if ':' in value:
@@ -175,7 +175,7 @@ class AVMPIAirtableRecord:
         '''
         instance = cls()
         problem_attrs = ['asset_barcode', 'color', 'sound', 'asset_duration', 'asset_size',
-                         'secondary_asset_id', 'physical_asset_barcode', 'date_value',
+                         'secondary_asset_id', 'physical_asset_barcode', 'date_value', 'asset_creation_date',
                          'brand_stock']
         link_field_attrs = ['DigitalAsset', 'PhysicalAsset', 'PhysicalFormat',
                             'LocationPrep', 'LocationDelivery', 'Collection',
@@ -369,6 +369,8 @@ class DigitalAssetRecord(Model, AVMPIAirtableRecord):
                 vars()[field] = fields.NumberField(field_name)
             elif field_type == 'duration':
                 vars()[field] = fields.DurationField(field_name)
+            elif field_type == 'date':
+                vars()[field] = fields.DateField(field_name)
         except (KeyError, TypeError):
             vars()[field] = fields.TextField(mapping['atbl'])
 
