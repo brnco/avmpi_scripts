@@ -38,9 +38,7 @@
             },
             "atbl": {
                 "name": "Physical Format",
-                "type": "linked_syncd",
-                "origin_base_id": "appWtd175HSokQgQP",
-                "origin_table_name": "AV Formats"
+                "type": "linked_syncd"
             }
         },
         "LocationPrep": {
@@ -116,7 +114,10 @@
         },
         "asset_barcode": {
             "xlsx": "N",
-            "atbl": "Asset Barcode"
+            "atbl": {
+                "name": "Asset Barcode",
+                "type": "barcode"
+            }
         },
         "original_container": {
             "xlsx": "O",
@@ -130,7 +131,7 @@
             "xlsx": "Q",
             "atbl": "Creator"
         },
-        "date": {
+        "date_value": {
             "xlsx": "R",
             "atbl": {
                 "name": "Date",
@@ -145,7 +146,7 @@
             "xlsx": "T",
             "atbl": {
                 "name": "Brand-stock",
-                "type": "singleSelect"
+                "type": "multipleSelect"
             }
         },
         "base_substrate": {

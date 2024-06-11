@@ -6,7 +6,7 @@ import json
 import pathlib
 import logging
 import requests
-from datetime import timedelta
+from datetime import timedelta, datetime
 from pprint import pformat
 from pyairtable import Api, Table
 from pyairtable import metadata as atbl_mtd
@@ -60,8 +60,11 @@ class AVMPIAirtableRecord:
         '''
         for some of these we need an extra layer of formatting
         '''
+        multi_select_fields = ['brand_stock']
+        if attr_name in multi_select_fields:
+            value = [val for val in value.split(',')]
         if 'asset_barcode' in attr_name:
-            value = str(int(value))
+            value = {"text": str(int(value))}
         if attr_name == 'color' or attr_name == 'sound':
             value = [value]
         if attr_name == 'secondary_asset_id':
@@ -71,6 +74,8 @@ class AVMPIAirtableRecord:
                 pass
         if attr_name == 'asset_size':
             value = float(value)
+        if attr_name == 'date_value':
+            value = datetime.strptime(value, '%Y-%m-%d')
         if attr_name == 'asset_duration':
             if ':' in value:
                 time_components = value.split(':')
@@ -170,7 +175,8 @@ class AVMPIAirtableRecord:
         '''
         instance = cls()
         problem_attrs = ['asset_barcode', 'color', 'sound', 'asset_duration', 'asset_size',
-                         'secondary_asset_id', 'physical_asset_barcode']
+                         'secondary_asset_id', 'physical_asset_barcode', 'date_value',
+                         'brand_stock']
         link_field_attrs = ['DigitalAsset', 'PhysicalAsset', 'PhysicalFormat',
                             'LocationPrep', 'LocationDelivery', 'Collection',
                             'Container']
@@ -198,9 +204,11 @@ class AVMPIAirtableRecord:
                 setattr(instance, attr_name, value)
             except TypeError as exc:
                 logger.error(f"attr_name: {attr_name}")
+                logger.error(f"type(attr_name): {type(attr_name)}")
                 logger.error(f"value: {value}")
+                logger.error(f"type(value): {type(value)}")
                 logger.error(exc, stack_info=True)
-                raise RuntimeError
+                raise RuntimeError("there was a problem parsing the above value to an Airtable field")
         return instance
 
     def _get_primary_key_info(self):
@@ -311,21 +319,26 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
             field_type = mapping['atbl']['type']
             field_name = mapping['atbl']['name']
             if field_type == 'singleSelect':
-                vars()[field] = fields.SelectField(field_name, typecast=False)
+                vars()[field] = fields.SelectField(field_name)
             elif field_type == 'multipleSelect':
-                vars()[field] = fields.MultipleSelectField(field_name, typecast=False)
+                vars()[field] = fields.MultipleSelectField(field_name)
             elif field_type == 'number':
                 vars()[field] = fields.NumberField(field_name)
             elif field_type == 'float':
                 vars()[field] = fields.FloatField(field_name)
             elif field_type == 'integer':
                 vars()[field] = fields.IntegerField(field_name)
-        except (KeyError, TypeError):
+            elif field_type == 'date':
+                vars()[field] = fields.DateField(field_name)
+            elif field_type == 'barcode':
+                vars()[field] = fields.BarcodeField(field_name)
+        except (KeyError, TypeError) as exc:
             vars()[field] = fields.TextField(mapping['atbl'])
 
     class Meta:
         base_id = "appU0Fh8L9xVZBeok"
         table_name = "Physical Assets"
+        typecast = False
 
         @staticmethod
         def api_key():
@@ -349,9 +362,9 @@ class DigitalAssetRecord(Model, AVMPIAirtableRecord):
             field_type = mapping['atbl']['type']
             field_name = mapping['atbl']['name']
             if field_type == 'singleSelect':
-                vars()[field] = fields.SelectField(field_name, typecast=False)
+                vars()[field] = fields.SelectField(field_name)
             elif field_type == 'multipleSelect':
-                vars()[field] = fields.MultipleSelectField(field_name, typecast=False)
+                vars()[field] = fields.MultipleSelectField(field_name)
             elif field_type == 'number':
                 vars()[field] = fields.NumberField(field_name)
             elif field_type == 'duration':
@@ -385,9 +398,9 @@ class PhysicalAssetActionRecord(Model, AVMPIAirtableRecord):
             field_type = mapping['atbl']['type']
             field_name = mapping['atbl']['name']
             if field_type == 'singleSelect':
-                vars()[field] = fields.SelectField(field_name, typecast=False)
+                vars()[field] = fields.SelectField(field_name)
             elif field_type == 'multipleSelect':
-                vars()[field] = fields.MultipleSelectField(field_name, typecast=False)
+                vars()[field] = fields.MultipleSelectField(field_name)
             elif field_type == 'number':
                 vars()[field] = fields.NumberField(field_name)
             elif field_type == 'float':
