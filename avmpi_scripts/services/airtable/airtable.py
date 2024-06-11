@@ -375,6 +375,7 @@ class DigitalAssetRecord(Model, AVMPIAirtableRecord):
     class Meta:
         base_id = 'appU0Fh8L9xVZBeok'
         table_name = 'Digital Assets'
+        typecast = False
 
         @staticmethod
         def api_key():
@@ -411,6 +412,7 @@ class PhysicalAssetActionRecord(Model, AVMPIAirtableRecord):
     class Meta:
         base_id = 'appU0Fh8L9xVZBeok'
         table_name = 'Physical Asset Action Log'
+        typecast = False
 
         @staticmethod
         def api_key():
