@@ -44,5 +44,26 @@ If you get a `ModuleNotFoundError` or `ImportError` when you run a script, you c
 
 `python -m pip install [module_name]`
 
+# Airtable configuration
 
+In order to integrate Airtable and Python, we need to link your Airtable account with the script. This is done through the use of a [Personal Access Token (PAT)](https://airtable.com/developers/web/guides/personal-access-tokens).
+
+## Create a Personal Access Token
+
+Follow the official documentation [at this link](https://airtable.com/developers/web/guides/personal-access-tokens#creating-a-token).
+
+For Scopes, use:
+
+```
+data.records:read
+See the data in records
+
+data.records:write
+Create, edit, and delete records
+
+schema.bases:read
+See the structure of a base, like table names or field types
+```
+
+For Access, we only need access to the `Assets` base
 
