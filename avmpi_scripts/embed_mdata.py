@@ -9,6 +9,7 @@ import logging
 import subprocess
 from pprint import pformat
 import make_log
+import util
 import services.airtable.airtable as airtable
 import services.excel.excel as excel
 
@@ -17,14 +18,20 @@ import services.excel.excel as excel
 def embed_bwf(path, metadata):
     '''
     actually embeds the metadata to file at path
+
+    metadata here is a list of BWFMetaEdit flags
     '''
+    cmd = ["bwfmetaedit"]
+    cmd.extend(metadata)
+    cmd.append(str(path))
+    util.run_cmd(cmd)
 
 
 def embed_metadata(kwvars):
     '''
     manages the process of embedding metadata
     '''
-
+    
 
 def parse_args(args):
     '''
@@ -37,11 +44,12 @@ def parse_args(args):
         kwvars['loglevel_print'] = logging.DEBUG
     else:
         kwvars['loglevel_print'] = logging.INFO
-    kwvars['input'] = pathlib.Path(args.input)
-    if args.no_validation:
-        kwvars['input_validation'] = False
-    else:
-        kwvars['input_validation'] = True
+    kwvars['input_waves'] = [pathlib.Path(arg)
+                             for arg in args.input
+                             if '.wav' in arg.lower()]
+    kwvars['input_excel'] = [arg
+                             for arg in args.input
+                             if '.xlsx' in arg.lower()]
     return kwvars
 
 
