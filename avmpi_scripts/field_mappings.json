@@ -317,5 +317,83 @@
                 "type": "duration"
             }
         }
+    },
+    "BroadcastWaveFile": {
+        "Description": {
+            "xlsx": "B",
+            "required": true
+        },
+        "Originator": {
+            "xlsx": "C",
+            "required": true
+        },
+        "originationDate": {
+            "xlsx": "D",
+            "required": true
+        },
+        "originationTime": {
+            "xlsx": "E",
+            "required": true
+        },
+        "originatorReference": {
+            "xlsx": "F",
+            "required": true
+        },
+        "UMID": {
+            "xlsx": "G"
+        },
+        "Version": {
+            "xlsx": "H",
+            "required": true
+        },
+        "timeReference": {
+            "xlsx": "I"
+        },
+        "codingHistory": {
+            "xlsx": "J",
+            "required": true
+        },
+        "IARL": {
+            "xlsx": "P",
+            "required": true
+        },
+        "ICMT": {
+            "xlsx": "Q"
+        },
+        "ICOP": {
+            "xlsx": "R",
+            "required": true
+        },
+        "ICRD": {
+            "xlsx": "S",
+            "required": true
+        },
+        "INAM": {
+            "xlsx": "T",
+            "required": true
+        },
+        "ITCH": {
+            "xlsx": "V",
+            "required": true
+        },
+        "IENG": {
+            "xlsx": "W"
+        },
+        "IKEY": {
+            "xlsx": "Z"
+        },
+        "ISBJ": {
+            "xlsx": "AB"
+        },
+        "ISFT": {
+            "xlsx": "AC",
+            "required": true
+        },
+        "ISRC": {
+            "xlsx": "AE"
+        },
+        "ISRF": {
+            "xlsx": "AF"
+        }
     }
 }
