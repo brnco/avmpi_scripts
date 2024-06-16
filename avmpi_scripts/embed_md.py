@@ -10,9 +10,9 @@ import subprocess
 from pprint import pformat
 import make_log
 import util
+import files
 import services.airtable.airtable as airtable
 import services.excel.excel as excel
-
 
 
 def embed_bwf(path, metadata):
@@ -24,14 +24,51 @@ def embed_bwf(path, metadata):
     cmd = ["bwfmetaedit"]
     cmd.extend(metadata)
     cmd.append(str(path))
-    util.run_cmd(cmd)
+    print(cmd)
+    # util.run_cmd(cmd)
+
+
+def process_rows(rows, kwvars):
+    '''
+    processes the rows for eventual embedding
+    '''
+    if kwvars['input_validation']:
+        # validate it
+        logger.debug("validating sheet against required fields...")
+        missing_fields = excel.validate_required_fields(list(rows.values()), 'BroadcastWaveFile')
+        if missing_fields:
+            logger.error(pformat(missing_fields))
+            raise ValueError("Excel file is missing required fields")
+        logger.debug("validation complete")
+    # parse each row to BroadcastWaveFile object, send for embedding
+    logger.info("parsing row to BWF...")
+    for row in rows:
+        logger.debug(pformat(rows[row]))
+        bwf = files.BroadcastWaveFile().from_xlsx(rows[row])
+        wav_path = pathlib.Path(rows[row]['A'])
+        '''
+        if not wav_path.exists():
+            raise FileNotFoundError(f"no file found at path {wav_path}")
+        '''
+        embed_bwf(str(wav_path), bwf.to_bwf_meta_list())
 
 
 def embed_metadata(kwvars):
     '''
     manages the process of embedding metadata
     '''
-    
+    logger.info("preparing to embed metadata into wave files...")    
+    workbook = excel.load_all_worksheets(kwvars['input'])
+    sheet = workbook['Fields_InUse']
+    if not kwvars['row']:
+        rows = sheet
+    else:
+        try:
+            rows = {kwvars['row']: sheet[kwvars['row']]}
+        except KeyError:
+            raise RuntimeError(f"specified row {kwvars['row']} is empty or does not exist")
+    process_rows(rows, kwvars)
+
 
 def parse_args(args):
     '''
@@ -50,6 +87,12 @@ def parse_args(args):
     kwvars['input_excel'] = [arg
                              for arg in args.input
                              if '.xlsx' in arg.lower()]
+    if args.no_validation:
+        kwvars['input_validation'] = False
+    else:
+        kwvars['input_validation'] = True
+    kwvars['input'] = pathlib.Path(args.input)
+    kwvars['row'] = args.row
     return kwvars
 
 
@@ -66,9 +109,12 @@ def init_args():
                         action='store_true', default=False,
                         help="run script in verbose mode. "
                         "print all log messages to command line")
-    parser.add_argument('-i', '--input', dest='input',
-                        metavar='', action='append',
-                        help="the inputs, either AV files or Excel spreadsheet")
+    parser.add_argument('-i', '--input', dest='input',metavar='',
+                        help="the input Excel spreadsheet")
+    parser.add_argument('--no_validation', dest='no_validation', action='store_true', default=False, 
+                        help="overrides the validation of required fields for input Excel xlsx files")
+    parser.add_argument('-r', '--row', dest='row', default=0, type=int,
+                        help="uploads an individual row by row number, e.g. -r 5 will upload row 5")
     args = parser.parse_args()
     return args
                             

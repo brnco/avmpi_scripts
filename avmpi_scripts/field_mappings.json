@@ -320,61 +320,85 @@
     },
     "BroadcastWaveFile": {
         "Description": {
-            "xlsx": "B",
-            "required": true
+            "xlsx": {
+                "column": "B",
+                "required": true
+            }
         },
         "Originator": {
-            "xlsx": "C",
-            "required": true
+            "xlsx": {
+                "column": "C",
+                "required": true
+            }
         },
         "originationDate": {
-            "xlsx": "D",
-            "required": true
+            "xlsx": {
+                "column": "D",
+                "required": true
+            }
         },
         "originationTime": {
-            "xlsx": "E",
-            "required": true
+            "xlsx": {
+                "column": "E",
+                "required": true
+            }
         },
         "originatorReference": {
-            "xlsx": "F",
-            "required": true
+            "xlsx": {
+                "column": "F",
+                "required": true
+            }
         },
         "UMID": {
             "xlsx": "G"
         },
         "Version": {
-            "xlsx": "H",
-            "required": true
+            "xlsx": {
+                "column": "H",
+                "required": true
+            }
         },
         "timeReference": {
             "xlsx": "I"
         },
         "codingHistory": {
-            "xlsx": "J",
-            "required": true
+            "xlsx": {
+                "column": "J",
+                "required": true
+            }
         },
         "IARL": {
-            "xlsx": "P",
-            "required": true
+            "xlsx": {
+                "column": "P",
+                "required": true
+            }
         },
         "ICMT": {
             "xlsx": "Q"
         },
         "ICOP": {
-            "xlsx": "R",
-            "required": true
+            "xlsx": {
+                "column": "R",
+                "required": true
+            }
         },
         "ICRD": {
-            "xlsx": "S",
-            "required": true
+            "xlsx": {
+                "column": "S",
+                "required": true
+            }
         },
         "INAM": {
-            "xlsx": "T",
-            "required": true
+            "xlsx": {
+                "column": "T",
+                "required": true
+            }
         },
         "ITCH": {
-            "xlsx": "V",
-            "required": true
+            "xlsx": {
+                "column": "V",
+                "required": true
+            }
         },
         "IENG": {
             "xlsx": "W"
@@ -386,8 +410,10 @@
             "xlsx": "AB"
         },
         "ISFT": {
-            "xlsx": "AC",
-            "required": true
+            "xlsx": {
+                "column": "AC",
+                "required": true
+            }
         },
         "ISRC": {
             "xlsx": "AE"

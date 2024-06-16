@@ -22,6 +22,12 @@
         "Fields_InUse": {
             "first_row_with_data": 5,
             "Last_column_with_data": "AF"
+        },
+        "Fields_General_Index": {
+            "skip": true
+        },
+        "Useful Links": {
+            "skip": true
         }
     }
 }

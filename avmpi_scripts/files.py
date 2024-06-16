@@ -1,9 +1,24 @@
 '''
 object classes for files on disk
 '''
+import json
 import logging
+import pathlib
+
 
 logger = logging.getLogger('main_logger')
+
+
+def get_field_map(obj_type):
+    '''
+    returns dictionary of field mappings for Excel <-> BWF Metadata
+    '''
+    module_dirpath = pathlib.Path(__file__).parent.absolute()
+    field_map_filepath = module_dirpath / 'field_mappings.json'
+    with open(field_map_filepath, 'r') as field_map_file:
+        field_mapping = json.load(field_map_file)
+    return field_mapping[obj_type]
+
 
 class BroadcastWaveFile(object):
     '''
@@ -35,6 +50,7 @@ class BroadcastWaveFile(object):
     ISRF
     '''
     def __init__(self, **kwargs):
+        field_map = get_field_map('BroadcastWaveFile')
         required_fields = ['Description', 'Originator', 'originationDate',
                            'originationTime', 'originatorReference', 'Version',
                            'codingHistory', 'IARL', 'ICOP', 'ICRD', 'INAM',
@@ -51,6 +67,34 @@ class BroadcastWaveFile(object):
                 setattr(self, attr_name, kwargs[attr_name])
             except Exception:
                 pass
+
+    @classmethod
+    def from_xlsx(cls, row):
+        '''
+        creates BWF object from a row in Excel metadata template
+        '''
+        field_map = get_field_map('BroadcastWaveFile')
+        instance = cls()
+        for attr_name, mapping in field_map.items():
+            try:
+                column = mapping['xlsx']['column']
+            except TypeError:
+                column = mapping['xlsx']
+            except Exception as exc:
+                raise RuntimeError(exc)
+            value = row[column]
+            if not value:
+                continue
+            try:
+                setattr(instance, attr_name, value)
+            except Exception as exc:
+                logger.error(f"attr_name: {attr_name}")
+                logger.error(f"type(attr_name): {type(attr_name)}")
+                logger.error(f"value: {value}")
+                logger.error(f"type(value): {type(value)}")
+                logger.error(exc, stack_info=True)
+                raise RuntimeError("there was a problem parsing that value")
+        return instance
 
     def to_bwf_meta_str(self):
         '''
