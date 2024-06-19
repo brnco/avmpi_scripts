@@ -10,11 +10,11 @@ Before installing, check out [this wiki page](https://github.com/brnco/avmpi_scr
 
 # Installation
 
-1. Clone the repo to anywhere on your machine
+## Clone the repo to anywhere on your machine
 
---I suggest `/home/your_username/code/` as the parent directory, so the local path to this repo would be `/home/your_username/code/avmpi_scripts`
+I suggest `/home/your_username/code/` as the parent directory, so the local path to this repo would be `/home/your_username/code/avmpi_scripts`
 
-2. Set up Virtual Environment
+## Set up Virtual Environment
 
 In order to protect your system's version of Python and any various packages it utilizes, we need to create our own separate Python environment in this repo.
 
@@ -24,7 +24,7 @@ Navigate to the top level directory of this repo and run the following command
 
 `python -m venv venv`
 
-3. Start the Virtual Environment
+## Start the Virtual Environment
 
 Now that we have our virtual environment initialized, we need to run it so that we can install our dependencies and run the scripts.
 
@@ -32,7 +32,7 @@ To do that on Mac, run
 
 `source venv/bin/activate`
 
-4. Install dependencies
+## Install dependencies
 
 All of the dependencies are detailed in `requirements.txt`. To install them, use
 
