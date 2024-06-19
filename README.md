@@ -4,6 +4,10 @@
 
 The home of the Smithsonian Library and Archives Audiovisual Media Preservation Initiative's software automations
 
+# Pre-Install
+
+Before isntalling, check out [this wiki page](https://github.com/brnco/avmpi_scripts/wiki/Pre%E2%80%90Install-Setup) for import pre-install setup notes.
+
 # Installation
 
 1. Clone the repo to anywhere on your machine
@@ -52,6 +56,8 @@ In order to integrate Airtable and Python, we need to link your Airtable account
 
 Follow the official documentation [at this link](https://airtable.com/developers/web/guides/personal-access-tokens#creating-a-token).
 
+For Name, use: `YourFirstName_avmpi_scripts`
+
 For Scopes, use:
 
 ```
@@ -67,3 +73,6 @@ See the structure of a base, like table names or field types
 
 For Access, we only need access to the `Assets` base
 
+## Add PAT to Airtable config
+
+Now that you have a personal access token, we need to add it to the Airtable config so that our scripts can use it. Open `airtable_config.json` in your favorite text editor, find the `api_key` key, and paste your PAT between the quotation marks on the value side. It should look like: `"api_key": "pat1234",`
