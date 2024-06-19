@@ -6,7 +6,7 @@ The home of the Smithsonian Library and Archives Audiovisual Media Preservation 
 
 # Pre-Install
 
-Before isntalling, check out [this wiki page](https://github.com/brnco/avmpi_scripts/wiki/Pre%E2%80%90Install-Setup) for import pre-install setup notes.
+Before installing, check out [this wiki page](https://github.com/brnco/avmpi_scripts/wiki/Pre%E2%80%90Install-Setup) for important pre-install setup notes.
 
 # Installation
 
