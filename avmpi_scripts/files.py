@@ -4,6 +4,7 @@ object classes for files on disk
 import json
 import logging
 import pathlib
+import services.airtable.airtable as airtable
 
 
 logger = logging.getLogger('main_logger')
@@ -49,8 +50,8 @@ class BroadcastWaveFile(object):
     ISBJ
     ISRF
     '''
+    
     def __init__(self, **kwargs):
-        field_map = get_field_map('BroadcastWaveFile')
         required_fields = ['Description', 'Originator', 'originationDate',
                            'originationTime', 'originatorReference', 'Version',
                            'codingHistory', 'IARL', 'ICOP', 'ICRD', 'INAM',
@@ -94,6 +95,28 @@ class BroadcastWaveFile(object):
                 logger.error(f"type(value): {type(value)}")
                 logger.error(exc, stack_info=True)
                 raise RuntimeError("there was a problem parsing that value")
+        return instance
+
+    @classmethod
+    def from_atbl(cls, digital_asset_id):
+        '''
+        gets BWF metadata from Digital Asset Record
+        '''
+        field_map = get_field_map('BroadcastWaveFile')
+        instance = cls()
+        atbl_base = airtable.connect_one_base("Assets")
+        atbl_tbl = atbl_base['Digital Assets']
+        atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
+        for field, mapping in field_map.items():
+            try:
+                foo = mapping['atbl']
+            except (KeyError, TypeError):
+                continue
+            try:
+                value = atbl_rec_digital_asset['fields'][mapping['atbl']]
+            except KeyError:
+                continue
+            setattr(instance, field, value)
         return instance
 
     def to_bwf_meta_str(self):

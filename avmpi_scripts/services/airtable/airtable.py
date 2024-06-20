@@ -597,6 +597,35 @@ def connect_one_base(base_name):
     return atbl_base
 
 
+def find(query, field, table, single_result=False):
+    '''
+    queries field in table
+    if single result is desired:
+    --returns single record (json) if 1 record found
+    --raises error if more than 1 record found
+    else:
+    --returns list of found records
+    '''
+    logger.info(f"searching Airtable table: {table}")
+    logger.info(f"for value: {query}")
+    logger.info(f"in field: {field}")
+    try:
+        results = table.all(formula=match({field: query}))
+        if results:
+            if single_result and len(results) >1:
+                raise ValueError
+            if single_result and len(results) == 1:
+                return results[0]
+            return results
+        logger.warning("no results found")
+        return None
+    except ValueError:
+        raise RuntimeError(f"too many results, expected 1, got {len(results)}")
+    except Exception as exc:
+        logger.exception(exc, stack_info=True)
+        raise RuntimeError("there was an error searching Airtable")
+
+
 def parse_asset_actions(atbl_rec):
     '''
     uh each action in the log gets its own record

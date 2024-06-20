@@ -53,11 +53,10 @@ def process_rows(rows, kwvars):
         embed_bwf(str(wav_path), bwf.to_bwf_meta_list())
 
 
-def embed_metadata(kwvars):
+def load_bwf_md_from_excel(kwvars):
     '''
-    manages the process of embedding metadata
+    loads bwf metadata from excel sheet
     '''
-    logger.info("preparing to embed metadata into wave files...")    
     workbook = excel.load_all_worksheets(kwvars['input'])
     sheet = workbook['Fields_InUse']
     if not kwvars['row']:
@@ -67,7 +66,22 @@ def embed_metadata(kwvars):
             rows = {kwvars['row']: sheet[kwvars['row']]}
         except KeyError:
             raise RuntimeError(f"specified row {kwvars['row']} is empty or does not exist")
-    process_rows(rows, kwvars)
+    return rows
+
+
+def embed_metadata(kwvars):
+    '''
+    manages the process of embedding metadata
+    '''
+    logger.info("preparing to embed metadata into wave files...")    
+    if kwvars['input']:
+        rows = load_bwf_md_from_excel(kwvars)
+        process_rows(rows, kwvars)
+    elif kwvars['daid']:
+        bwf = files.BroadcastWaveFile().from_atbl(kwvars['daid'])
+        logger.info(pformat(bwf))
+        wav_path = kwvars['daid'] + ".wav"
+        embed_bwf(wav_path, bwf.to_bwf_meta_list())
 
 
 def parse_args(args):
@@ -81,18 +95,16 @@ def parse_args(args):
         kwvars['loglevel_print'] = logging.DEBUG
     else:
         kwvars['loglevel_print'] = logging.INFO
-    kwvars['input_waves'] = [pathlib.Path(arg)
-                             for arg in args.input
-                             if '.wav' in arg.lower()]
-    kwvars['input_excel'] = [arg
-                             for arg in args.input
-                             if '.xlsx' in arg.lower()]
     if args.no_validation:
         kwvars['input_validation'] = False
     else:
         kwvars['input_validation'] = True
-    kwvars['input'] = pathlib.Path(args.input)
+    try:
+        kwvars['input'] = pathlib.Path(args.input)
+    except TypeError:
+        kwvars['input'] = None
     kwvars['row'] = args.row
+    kwvars['daid'] = args.daid
     return kwvars
 
 
@@ -115,6 +127,8 @@ def init_args():
                         help="overrides the validation of required fields for input Excel xlsx files")
     parser.add_argument('-r', '--row', dest='row', default=0, type=int,
                         help="uploads an individual row by row number, e.g. -r 5 will upload row 5")
+    parser.add_argument('-daid', '--digital_asset_id', dest='daid',
+                        help="the Digital Asset ID we would like to embed metadata for")
     args = parser.parse_args()
     return args
                             

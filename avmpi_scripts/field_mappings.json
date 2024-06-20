@@ -329,7 +329,8 @@
             "xlsx": {
                 "column": "C",
                 "required": true
-            }
+            },
+            "atbl": "Collection Unit (from Collection) (from Original Physical Asset)"
         },
         "originationDate": {
             "xlsx": {
@@ -347,7 +348,8 @@
             "xlsx": {
                 "column": "F",
                 "required": true
-            }
+            },
+            "atbl": "Original Physical Asset"
         },
         "UMID": {
             "xlsx": "G"
@@ -365,7 +367,8 @@
             "xlsx": {
                 "column": "J",
                 "required": true
-            }
+            },
+            "atbl": "Coding History"
         },
         "IARL": {
             "xlsx": {
@@ -374,7 +377,8 @@
             }
         },
         "ICMT": {
-            "xlsx": "Q"
+            "xlsx": "Q",
+            "atbl": "Transfer Issue-Anomaly Notes"
         },
         "ICOP": {
             "xlsx": {
@@ -386,13 +390,15 @@
             "xlsx": {
                 "column": "S",
                 "required": true
-            }
+            },
+            "atbl": "Date (from Original Physical Asset)"
         },
         "INAM": {
             "xlsx": {
                 "column": "T",
                 "required": true
-            }
+            },
+            "atbl": "Title - free text (from Original Physical Asset)"
         },
         "ITCH": {
             "xlsx": {
@@ -401,7 +407,8 @@
             }
         },
         "IENG": {
-            "xlsx": "W"
+            "xlsx": "W",
+            "atbl": "Performed by (from Original Physical Asset) (from Asset Action Log)"
         },
         "IKEY": {
             "xlsx": "Z"
@@ -419,7 +426,8 @@
             "xlsx": "AE"
         },
         "ISRF": {
-            "xlsx": "AF"
+            "xlsx": "AF",
+            "atbl": "Physical Form (from Original Physical Asset)"
         }
     }
 }
