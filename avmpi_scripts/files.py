@@ -104,9 +104,12 @@ class BroadcastWaveFile(object):
         '''
         field_map = get_field_map('BroadcastWaveFile')
         instance = cls()
+        post_process_fields = ['Originator', 'originatorReference', 'ISRF', 'codingHistory']
         atbl_base = airtable.connect_one_base("Assets")
         atbl_tbl = atbl_base['Digital Assets']
         atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
+        if not atbl_rec_digital_asset:
+            raise RuntimeError(f"no records found for Digital Asset ID {digital_asset_id}")
         for field, mapping in field_map.items():
             try:
                 foo = mapping['atbl']
@@ -115,7 +118,17 @@ class BroadcastWaveFile(object):
             try:
                 value = atbl_rec_digital_asset['fields'][mapping['atbl']]
             except KeyError:
-                continue
+                if field == 'codingHistory':
+                    try:
+                        value = atbl_rec_digital_asset['fields']['A-D Transfers (BWF)']
+                    except KeyError:
+                        raise RuntimeError("no Coding History specified in 'Coding History' field, no A-D Transfer linked. \
+                                           Cannot create Coding History for this asset. Exiting...")
+                else:
+                    continue
+            if isinstance(value, list):
+                if len(value) == 1:
+                    value = value[0]
             setattr(instance, field, value)
         return instance
 

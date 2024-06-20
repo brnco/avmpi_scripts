@@ -80,7 +80,7 @@ def embed_metadata(kwvars):
     elif kwvars['daid']:
         bwf = files.BroadcastWaveFile().from_atbl(kwvars['daid'])
         logger.info(pformat(bwf))
-        wav_path = kwvars['daid'] + ".wav"
+        wav_path = kwvars['daid']
         embed_bwf(wav_path, bwf.to_bwf_meta_list())
 
 

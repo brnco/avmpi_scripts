@@ -330,7 +330,7 @@
                 "column": "C",
                 "required": true
             },
-            "atbl": "Collection Unit (from Collection) (from Original Physical Asset)"
+            "atbl": "Originator (BWF)"
         },
         "originationDate": {
             "xlsx": {
@@ -349,7 +349,7 @@
                 "column": "F",
                 "required": true
             },
-            "atbl": "Original Physical Asset"
+            "atbl": "originatorReference (BWF)"
         },
         "UMID": {
             "xlsx": "G"
@@ -391,7 +391,7 @@
                 "column": "S",
                 "required": true
             },
-            "atbl": "Date (from Original Physical Asset)"
+            "atbl": "ICRD (BWF)"
         },
         "INAM": {
             "xlsx": {
@@ -408,7 +408,7 @@
         },
         "IENG": {
             "xlsx": "W",
-            "atbl": "Performed by (from Original Physical Asset) (from Asset Action Log)"
+            "atbl": "A-D Transfer - Performed by (BWF)"
         },
         "IKEY": {
             "xlsx": "Z"
@@ -427,7 +427,7 @@
         },
         "ISRF": {
             "xlsx": "AF",
-            "atbl": "Physical Form (from Original Physical Asset)"
+            "atbl": "ISRF (BWF)"
         }
     }
 }
