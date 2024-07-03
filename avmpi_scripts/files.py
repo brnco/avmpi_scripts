@@ -121,6 +121,7 @@ class BroadcastWaveFile(object):
                 if field == 'codingHistory':
                     try:
                         value = atbl_rec_digital_asset['fields']['A-D Transfers (BWF)']
+                        value = make_coding_history(atbl_rec_digital_asset)
                     except KeyError:
                         raise RuntimeError("no Coding History specified in 'Coding History' field, no A-D Transfer linked. \
                                            Cannot create Coding History for this asset. Exiting...")
@@ -153,3 +154,29 @@ class BroadcastWaveFile(object):
             bwf_meta_list.extend(chunk)
         return bwf_meta_list
 
+    def make_coding_history(atbl_rec_digital_asset):
+        '''
+        generates coding history field based on Airtable values
+        '''
+        coding_algorithm = 'A=ANALOG'
+        field_map = { "sampling_frequency": {
+            "prefix": "F",
+            
+        }"Sampling Frequency (BWF)",
+                        "word_length": "Bit Depth (BWF)",
+                        "mode": "Audio Channel (BWF)"}
+        for field, mapping in field_map.items():
+            try:
+                value = atbl_rec_digital_asset['fields'][mapping[field]]
+
+         = 'asset_action_log.equipment_used'
+        txtfs_equipment_sn = 'asset_action_log.equipment_sn'
+        txtfs_speed_value = 'physical_assets.speed'
+        txtfs_speed_type = 'physical_assets.speed_type'
+        txtfs = ';'.join([txtfs_equipment_model, txtfs_equipment_sn, txtfs_speed_value + txtfs_speed_type])
+        coding_history = "A=" + coding_algorithm + "\n" + \
+                        "F=" + sampling_frequency + "\n" + \
+                        "W=" + word_length + "\n" + \
+                        "M=" + mode + "\n" + \
+                        "T=" + txtfs
+        return coding_history
