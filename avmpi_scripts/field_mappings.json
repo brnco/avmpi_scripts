@@ -429,5 +429,37 @@
             "xlsx": "AF",
             "atbl": "ISRF (BWF)"
         }
+    },
+    "CodingHistory": {
+        "sampling_frequency": {
+            "atbl": {
+                "name": "Sampling Frequency (BWF)",
+                "prefix": "F="
+            }
+        },
+        "word_length": {
+            "atbl": {
+                "name": "Bit Depth (BWF)",
+                "prefix": "W="
+            }
+        },
+        "mode": {
+            "atbl": {
+                "name": "Audio Channel (BWF)",
+                "prefix": "M="
+            }
+        },
+        "txtfs_equipment_model": {
+            "atbl": "Equipment Used (BWF)"
+        },
+        "txtfs_equipment_sn": {
+            "atbl": "Equipment SN (BWF)"
+        },
+        "txtfs_speed_value": {
+            "atbl": "Speed (BWF)"
+        },
+        "txtfs_speed_type": {
+            "atbl": "Speed Type (BWF)"
+        }
     }
 }

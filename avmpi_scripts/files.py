@@ -121,7 +121,6 @@ class BroadcastWaveFile(object):
                 if field == 'codingHistory':
                     try:
                         value = atbl_rec_digital_asset['fields']['A-D Transfers (BWF)']
-                        value = make_coding_history(atbl_rec_digital_asset)
                     except KeyError:
                         raise RuntimeError("no Coding History specified in 'Coding History' field, no A-D Transfer linked. \
                                            Cannot create Coding History for this asset. Exiting...")
@@ -154,29 +153,44 @@ class BroadcastWaveFile(object):
             bwf_meta_list.extend(chunk)
         return bwf_meta_list
 
-    def make_coding_history(atbl_rec_digital_asset):
+
+class CodingHistory(object):
+    '''
+    this BWF field is complicated so it gets its own object
+    '''
+
+    @classmethod
+    def from_atbl(cls, digital_asset_id):
         '''
-        generates coding history field based on Airtable values
+        creates coding history from Digital Asset Airtable record
         '''
-        coding_algorithm = 'A=ANALOG'
-        field_map = { "sampling_frequency": {
-            "prefix": "F",
-            
-        }"Sampling Frequency (BWF)",
-                        "word_length": "Bit Depth (BWF)",
-                        "mode": "Audio Channel (BWF)"}
+        instance = cls()
+        field_map = get_field_map('CodingHistory')
+        atbl_base = airtable.connect_one_base("Assets")
+        atbl_tbl = atbl_base['Digital Assets']
+        atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
+        txtfs_fields = ['txtfs_equipment_model', 'txtfs_equipment_sn',
+                        'txtfs_speed_value', 'txtfs_speed_type']
+        if not atbl_rec_digital_asset:
+            raise RuntimeError(f"no records found for Digital Asset ID {digital_asset_id}")
         for field, mapping in field_map.items():
             try:
-                value = atbl_rec_digital_asset['fields'][mapping[field]]
-
-         = 'asset_action_log.equipment_used'
-        txtfs_equipment_sn = 'asset_action_log.equipment_sn'
-        txtfs_speed_value = 'physical_assets.speed'
-        txtfs_speed_type = 'physical_assets.speed_type'
-        txtfs = ';'.join([txtfs_equipment_model, txtfs_equipment_sn, txtfs_speed_value + txtfs_speed_type])
-        coding_history = "A=" + coding_algorithm + "\n" + \
-                        "F=" + sampling_frequency + "\n" + \
-                        "W=" + word_length + "\n" + \
-                        "M=" + mode + "\n" + \
-                        "T=" + txtfs
-        return coding_history
+                foo = mapping['atbl']
+            except (KeyError, TypeError):
+                continue
+            try:
+                value = atbl_rec_digital_asset['fields'][mapping['atbl']['name']]
+            except (KeyError, TypeError):
+                # means this is a txtfs field
+                value = atbl_rec_digital_asset['fields'][mapping['atbl']]
+            if isinstance(value, list):
+                if len(value) == 1:
+                    value = value[0]
+                else:
+                    value = ','.join(value)
+            try:
+                value = mapping['atbl']['prefix'] + value
+            except (KeyError, TypeError):
+                pass
+            setattr(instance, field, value)
+        return instance
