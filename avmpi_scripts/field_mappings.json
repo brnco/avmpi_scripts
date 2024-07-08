@@ -398,7 +398,7 @@
                 "column": "T",
                 "required": true
             },
-            "atbl": "Title - free text (from Original Physical Asset)"
+            "atbl": "Title - Free text (from Original Physical Asset)"
         },
         "ITCH": {
             "xlsx": {
@@ -449,8 +449,8 @@
                 "prefix": "M="
             }
         },
-        "txtfs_equipment_model": {
-            "atbl": "Equipment Used (BWF)"
+        "txtfs_equipment_model":{
+            "atbl": "Equipment Used - Digitization (BWF)"
         },
         "txtfs_equipment_sn": {
             "atbl": "Equipment SN (BWF)"

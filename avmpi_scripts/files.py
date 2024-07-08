@@ -21,6 +21,53 @@ def get_field_map(obj_type):
     return field_mapping[obj_type]
 
 
+class CodingHistory(object):
+    '''
+    this BWF field is complicated so it gets its own object
+    '''
+
+    @classmethod
+    def from_atbl(cls, digital_asset_id):
+        '''
+        creates coding history from Digital Asset Airtable record
+        '''
+        instance = cls()
+        setattr(instance, 'algorithm', 'A=ANALOG')
+        field_map = get_field_map('CodingHistory')
+        atbl_base = airtable.connect_one_base("Assets")
+        atbl_tbl = atbl_base['Digital Assets']
+        atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
+        txtfs_fields = ['txtfs_equipment_model', 'txtfs_equipment_sn',
+                        'txtfs_speed_value', 'txtfs_speed_type']
+        if not atbl_rec_digital_asset:
+            raise RuntimeError(f"no records found for Digital Asset ID {digital_asset_id}")
+        for field, mapping in field_map.items():
+            try:
+                foo = mapping['atbl']
+            except (KeyError, TypeError):
+                continue
+            try:
+                value = atbl_rec_digital_asset['fields'][mapping['atbl']['name']]
+            except KeyError:
+                # means this field wasn't included in response
+                # i.e. this field isn't filled in
+                continue
+            except TypeError:
+                # means this is a txtfs field
+                value = atbl_rec_digital_asset['fields'][mapping['atbl']]
+            if isinstance(value, list):
+                if len(value) == 1:
+                    value = value[0]
+                else:
+                    value = ','.join(value)
+            try:
+                value = mapping['atbl']['prefix'] + value
+            except (KeyError, TypeError):
+                pass
+            setattr(instance, field, value)
+        return instance
+
+
 class BroadcastWaveFile(object):
     '''
     class for BWF WAVE
@@ -121,6 +168,7 @@ class BroadcastWaveFile(object):
                 if field == 'codingHistory':
                     try:
                         value = atbl_rec_digital_asset['fields']['A-D Transfers (BWF)']
+                        value = CodingHistory().from_atbl(digital_asset_id)
                     except KeyError:
                         raise RuntimeError("no Coding History specified in 'Coding History' field, no A-D Transfer linked. \
                                            Cannot create Coding History for this asset. Exiting...")
@@ -152,45 +200,3 @@ class BroadcastWaveFile(object):
             chunk = [chunk_str, value]
             bwf_meta_list.extend(chunk)
         return bwf_meta_list
-
-
-class CodingHistory(object):
-    '''
-    this BWF field is complicated so it gets its own object
-    '''
-
-    @classmethod
-    def from_atbl(cls, digital_asset_id):
-        '''
-        creates coding history from Digital Asset Airtable record
-        '''
-        instance = cls()
-        field_map = get_field_map('CodingHistory')
-        atbl_base = airtable.connect_one_base("Assets")
-        atbl_tbl = atbl_base['Digital Assets']
-        atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
-        txtfs_fields = ['txtfs_equipment_model', 'txtfs_equipment_sn',
-                        'txtfs_speed_value', 'txtfs_speed_type']
-        if not atbl_rec_digital_asset:
-            raise RuntimeError(f"no records found for Digital Asset ID {digital_asset_id}")
-        for field, mapping in field_map.items():
-            try:
-                foo = mapping['atbl']
-            except (KeyError, TypeError):
-                continue
-            try:
-                value = atbl_rec_digital_asset['fields'][mapping['atbl']['name']]
-            except (KeyError, TypeError):
-                # means this is a txtfs field
-                value = atbl_rec_digital_asset['fields'][mapping['atbl']]
-            if isinstance(value, list):
-                if len(value) == 1:
-                    value = value[0]
-                else:
-                    value = ','.join(value)
-            try:
-                value = mapping['atbl']['prefix'] + value
-            except (KeyError, TypeError):
-                pass
-            setattr(instance, field, value)
-        return instance
