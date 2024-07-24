@@ -461,5 +461,19 @@
         "txtfs_speed_type": {
             "atbl": "Speed Type (BWF)"
         }
+    },
+    "BWFDescription": {
+        "id_main": {
+            "atbl": {
+                "name": "originatorReference (BWF)",
+                "prefix": "unit_id, "
+            }
+        },
+        "id_avmpi_barcode": {
+            "atbl": {
+                "name": "Asset Barcode (from Original Physical Asset)",
+                "prefix": "avmpi_barcode"
+            }
+        }
     }
 }

@@ -91,10 +91,14 @@ class BWFDescription(object):
             except (KeyError, TypeError):
                 continue
             try:
-                value = atbl_rec_digital_asset['fields'][mapping['atbl']]
+                value = atbl_rec_digital_asset['fields'][mapping['atbl']['name']]
             except:
                 raise RuntimeError(f"returned Digital Asset Record missing field {field}")
-            setattr(instance, field, value)
+            try:
+                value = mapping['atbl']['prefix'] + value
+            except (KeyError, TypeError):
+                pass
+            setattr(instance, field, final)
         return instance
             
 
