@@ -65,6 +65,15 @@ class CodingHistory(object):
             except (KeyError, TypeError):
                 pass
             setattr(instance, field, value)
+        _codinghistory = []
+        for field in field_map.keys():
+            try:
+                element = getattr(instance, field)
+                codinghistory.append(element)
+            except Exception:
+                pass
+        codinghistory = '; '.join(_codinghistory)
+        setattr(instance, "CodingHistory", codinghistory)
         return instance
 
 
@@ -76,7 +85,7 @@ class BWFDescription(object):
     @classmethod
     def from_atbl(cls, digital_asset_id):
         '''
-        creates coding history from Digital Asset Airtable record
+        creates BWF Description from Digital Asset Airtable record
         '''
         instance = cls()
         field_map = get_field_map('BWFDescription')
@@ -98,7 +107,16 @@ class BWFDescription(object):
                 value = mapping['atbl']['prefix'] + value
             except (KeyError, TypeError):
                 pass
-            setattr(instance, field, final)
+            setattr(instance, field, value)
+        every_descriptor = []
+        for field in field_map.keys():
+            try:
+                value = getattr(instance, field)
+            except Exception:
+                pass
+            every_descriptor.append(value)
+        description = '; '.join(every_descriptor)
+        setattr(instance, "Description", description[:256])
         return instance
             
 
@@ -201,11 +219,16 @@ class BroadcastWaveFile(object):
             except KeyError:
                 if field == 'codingHistory':
                     try:
-                        value = atbl_rec_digital_asset['fields']['A-D Transfers (BWF)']
-                        value = CodingHistory().from_atbl(digital_asset_id)
+                        # value = atbl_rec_digital_asset['fields']['A-D Transfers (BWF)']
+                        bwf_codhist = CodingHistory().from_atbl(digital_asset_id)
+                        value = getattr(bwf_codhist, "CodingHistory")
                     except KeyError:
                         raise RuntimeError("no Coding History specified in 'Coding History' field, no A-D Transfer linked. \
                                            Cannot create Coding History for this asset. Exiting...")
+                elif field == 'Description':
+                    try:
+                        bwf_description = BWFDescription().from_atbl(digital_asset_id)
+                        value = getattr(bwf_description, "Description")
                 else:
                     continue
             if isinstance(value, list):
