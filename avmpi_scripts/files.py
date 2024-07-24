@@ -68,6 +68,36 @@ class CodingHistory(object):
         return instance
 
 
+class BWFDescription(object):
+    '''
+    BWF Description field is a mess so it gets its own class
+    '''
+
+    @classmethod
+    def from_atbl(cls, digital_asset_id):
+        '''
+        creates coding history from Digital Asset Airtable record
+        '''
+        instance = cls()
+        field_map = get_field_map('BWFDescription')
+        atbl_base = airtable.connect_one_base("Assets")
+        atbl_tbl = atbl_base['Digital Assets']
+        atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
+        if not atbl_rec_digital_asset:
+            raise RuntimeError(f"no records found for Digital Asset ID {digital_asset_id}")
+        for field, mapping in field_map.items():
+            try:
+                foo = mapping['atbl']
+            except (KeyError, TypeError):
+                continue
+            try:
+                value = atbl_rec_digital_asset['fields'][mapping['atbl']]
+            except:
+                raise RuntimeError(f"returned Digital Asset Record missing field {field}")
+            setattr(instance, field, value)
+        return instance
+            
+
 class BroadcastWaveFile(object):
     '''
     class for BWF WAVE
