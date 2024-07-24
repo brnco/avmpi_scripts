@@ -1,5 +1,5 @@
 '''
-uploads metadata in Excel spreadsheets to Airtable
+takes metadata form Airtable and pops it into WAVE files
 '''
 import configparser
 import argparse
@@ -80,8 +80,14 @@ def embed_metadata(kwvars):
     elif kwvars['daid']:
         bwf = files.BroadcastWaveFile().from_atbl(kwvars['daid'])
         logger.info(pformat(bwf))
-        wav_path = kwvars['daid']
-        embed_bwf(wav_path, bwf.to_bwf_meta_list())
+        if kwvars['dadir']:
+            wav_path = pathlib.Path(kwvars['dadir'])
+        else:
+            wav_path = os.getcwd()
+            wav_path = pathlib.Path(wav_path)
+        wav_name = kwvars['daid']
+        wav_fullpath = wav_path / wav_name
+        embed_bwf(wav_fullpath, bwf.to_bwf_meta_list())
 
 
 def parse_args(args):
@@ -105,6 +111,7 @@ def parse_args(args):
         kwvars['input'] = None
     kwvars['row'] = args.row
     kwvars['daid'] = args.daid
+    kwvars['dadir'] = args.dadir
     return kwvars
 
 
@@ -127,8 +134,10 @@ def init_args():
                         help="overrides the validation of required fields for input Excel xlsx files")
     parser.add_argument('-r', '--row', dest='row', default=0, type=int,
                         help="uploads an individual row by row number, e.g. -r 5 will upload row 5")
-    parser.add_argument('-daid', '--digital_asset_id', dest='daid',
+    parser.add_argument('-daid', '--digital_asset_id', dest='daid', default=None,
                         help="the Digital Asset ID we would like to embed metadata for")
+    parser.add_argument('-dadir', '--digital_asset_directory', dest='dadir', default=None
+                        help="the directory where the Digital Asset is located")
     args = parser.parse_args()
     return args
                             
