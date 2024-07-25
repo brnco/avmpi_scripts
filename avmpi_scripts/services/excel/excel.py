@@ -42,11 +42,14 @@ def get_workbook_type(workbook):
     conf = config()
     unit_sheetnames = list(conf['Unit-AssetsMetadata'].keys())
     vendor_sheetnames = list(conf['Vendor-AssetsMetadata'].keys())
+    bwf_sheetnames = list(conf['Unit-BWF'].keys())
     workbook_sheetnames = [sheet for sheet in workbook.sheetnames]
     if unit_sheetnames == workbook_sheetnames:
         return 'Unit-AssetsMetadata'
     elif vendor_sheetnames == workbook_sheetnames:
         return 'Vendor-AssetsMetadata'
+    elif bwf_sheetnames == workbook_sheetnames:
+        return 'Unit-BWF'
     else:
         return None
 

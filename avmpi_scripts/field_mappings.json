@@ -317,5 +317,163 @@
                 "type": "duration"
             }
         }
+    },
+    "BroadcastWaveFile": {
+        "Description": {
+            "xlsx": {
+                "column": "B",
+                "required": true
+            }
+        },
+        "Originator": {
+            "xlsx": {
+                "column": "C",
+                "required": true
+            },
+            "atbl": "Originator (BWF)"
+        },
+        "originationDate": {
+            "xlsx": {
+                "column": "D",
+                "required": true
+            }
+        },
+        "originationTime": {
+            "xlsx": {
+                "column": "E",
+                "required": true
+            }
+        },
+        "originatorReference": {
+            "xlsx": {
+                "column": "F",
+                "required": true
+            },
+            "atbl": "originatorReference (BWF)"
+        },
+        "UMID": {
+            "xlsx": "G"
+        },
+        "Version": {
+            "xlsx": {
+                "column": "H",
+                "required": true
+            }
+        },
+        "timeReference": {
+            "xlsx": "I"
+        },
+        "History": {
+            "xlsx": {
+                "column": "J",
+                "required": true
+            },
+            "atbl": "Coding History"
+        },
+        "IARL": {
+            "xlsx": {
+                "column": "P",
+                "required": true
+            }
+        },
+        "ICMT": {
+            "xlsx": "Q",
+            "atbl": "Transfer Issue-Anomaly Notes"
+        },
+        "ICOP": {
+            "xlsx": {
+                "column": "R",
+                "required": true
+            }
+        },
+        "ICRD": {
+            "xlsx": {
+                "column": "S",
+                "required": true
+            },
+            "atbl": "ICRD (BWF)"
+        },
+        "INAM": {
+            "xlsx": {
+                "column": "T",
+                "required": true
+            },
+            "atbl": "Title - Free text (from Original Physical Asset)"
+        },
+        "ITCH": {
+            "xlsx": {
+                "column": "V",
+                "required": true
+            }
+        },
+        "IENG": {
+            "xlsx": "W",
+            "atbl": "A-D Transfer - Performed by (BWF)"
+        },
+        "IKEY": {
+            "xlsx": "Z"
+        },
+        "ISBJ": {
+            "xlsx": "AB"
+        },
+        "ISFT": {
+            "xlsx": {
+                "column": "AC",
+                "required": true
+            }
+        },
+        "ISRC": {
+            "xlsx": "AE"
+        },
+        "ISRF": {
+            "xlsx": "AF",
+            "atbl": "ISRF (BWF)"
+        }
+    },
+    "History": {
+        "sampling_frequency": {
+            "atbl": {
+                "name": "Sampling Frequency (BWF)",
+                "prefix": "F="
+            }
+        },
+        "word_length": {
+            "atbl": {
+                "name": "Bit Depth (BWF)",
+                "prefix": "W="
+            }
+        },
+        "mode": {
+            "atbl": {
+                "name": "Audio Channel (BWF)",
+                "prefix": "M="
+            }
+        },
+        "txtfs_equipment_model":{
+            "atbl": "Equipment Used - Digitization (BWF)"
+        },
+        "txtfs_equipment_sn": {
+            "atbl": "Equipment SN (BWF)"
+        },
+        "txtfs_speed_value": {
+            "atbl": "Speed (BWF)"
+        },
+        "txtfs_speed_type": {
+            "atbl": "Speed Type (BWF)"
+        }
+    },
+    "BWFDescription": {
+        "id_main": {
+            "atbl": {
+                "name": "originatorReference (BWF)",
+                "prefix": "unit_id, "
+            }
+        },
+        "id_avmpi_barcode": {
+            "atbl": {
+                "name": "avmpi_barcode (BWF)",
+                "prefix": "avmpi_barcode, "
+            }
+        }
     }
 }
