@@ -229,8 +229,9 @@ class BroadcastWaveFile(object):
                         bwf_codhist = CodingHistory().from_atbl(digital_asset_id)
                         value = getattr(bwf_codhist, "CodingHistory")
                     except KeyError:
-                        raise RuntimeError("no Coding History specified in 'Coding History' field, no A-D Transfer linked. \
-                                           Cannot create Coding History for this asset. Exiting...")
+                        details = ("No Coding History specified in 'Coding History' field and no linked A-D Transfer. "
+                                   "Exiting...")
+                        raise RuntimeError(f"Cannot create Coding History for {digital_asset_id}. {details}")
                 else:
                     continue
             if isinstance(value, list):
