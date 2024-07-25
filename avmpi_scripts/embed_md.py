@@ -76,7 +76,6 @@ def embed_metadata(kwvars):
         process_rows(rows, kwvars)
     elif kwvars['daid']:
         bwf = files.BroadcastWaveFile().from_atbl(kwvars['daid'])
-        logger.info(pformat(bwf.__dict__))
         if kwvars['dadir']:
             wav_path = pathlib.Path(kwvars['dadir'])
         else:

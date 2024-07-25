@@ -247,7 +247,6 @@ class BroadcastWaveFile(object):
         for attr_name, value in self.__dict__.items():
             chunk_str = '--' + attr_name + '="' + value + '" '
             bwf_meta_str += chunk_str
-        print(bwf_meta_str)
         return bwf_meta_str.strip()
 
     def to_bwf_meta_list(self):
