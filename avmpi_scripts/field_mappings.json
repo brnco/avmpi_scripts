@@ -363,7 +363,7 @@
         "timeReference": {
             "xlsx": "I"
         },
-        "codingHistory": {
+        "History": {
             "xlsx": {
                 "column": "J",
                 "required": true
@@ -430,7 +430,7 @@
             "atbl": "ISRF (BWF)"
         }
     },
-    "CodingHistory": {
+    "History": {
         "sampling_frequency": {
             "atbl": {
                 "name": "Sampling Frequency (BWF)",
@@ -471,8 +471,8 @@
         },
         "id_avmpi_barcode": {
             "atbl": {
-                "name": "Asset Barcode (from Original Physical Asset)",
-                "prefix": "avmpi_barcode"
+                "name": "avmpi_barcode (BWF)",
+                "prefix": "avmpi_barcode, "
             }
         }
     }

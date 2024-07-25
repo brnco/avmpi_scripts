@@ -15,7 +15,7 @@ def run_command(cmd, return_output=False):
     logger.info(f"running command: {cmd}")
     try:
         output = subprocess.run(cmd, shell=True, capture_output=True)
-        if not output.returncode == '0':
+        if not output.returncode == 0:
             logger.error(f"return code: {output.returncode}")
             logger.error(f"error description: {output.stderr.decode('utf-8')}")
             raise RuntimeError("there was a problem running that command")

@@ -21,11 +21,8 @@ def embed_bwf(path, metadata):
 
     metadata here is a list of BWFMetaEdit flags
     '''
-    cmd = ["bwfmetaedit"]
-    cmd.extend(metadata)
-    cmd.append(str(path))
-    print(cmd)
-    # util.run_cmd(cmd)
+    cmd = "bwfmetaedit " + metadata + " " + str(path)
+    util.run_command(cmd)
 
 
 def process_rows(rows, kwvars):
@@ -79,7 +76,7 @@ def embed_metadata(kwvars):
         process_rows(rows, kwvars)
     elif kwvars['daid']:
         bwf = files.BroadcastWaveFile().from_atbl(kwvars['daid'])
-        logger.info(pformat(bwf))
+        logger.info(pformat(bwf.__dict__))
         if kwvars['dadir']:
             wav_path = pathlib.Path(kwvars['dadir'])
         else:
@@ -87,7 +84,7 @@ def embed_metadata(kwvars):
             wav_path = pathlib.Path(wav_path)
         wav_name = kwvars['daid']
         wav_fullpath = wav_path / wav_name
-        embed_bwf(wav_fullpath, bwf.to_bwf_meta_list())
+        embed_bwf(wav_fullpath, bwf.to_bwf_meta_str())
 
 
 def parse_args(args):
@@ -136,7 +133,7 @@ def init_args():
                         help="uploads an individual row by row number, e.g. -r 5 will upload row 5")
     parser.add_argument('-daid', '--digital_asset_id', dest='daid', default=None,
                         help="the Digital Asset ID we would like to embed metadata for")
-    parser.add_argument('-dadir', '--digital_asset_directory', dest='dadir', default=None
+    parser.add_argument('-dadir', '--digital_asset_directory', dest='dadir', default=None,
                         help="the directory where the Digital Asset is located")
     args = parser.parse_args()
     return args
@@ -152,7 +149,7 @@ def main():
     global logger
     logger = make_log.init_log(loglevel_print=kwvars['loglevel_print'])
     embed_metadata(kwvars)
-    logger.info("embed_mdata has completed successfully")
+    logger.info("embed_md has completed successfully")
 
 if __name__ == "__main__":
     main()

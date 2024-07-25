@@ -33,7 +33,7 @@ class CodingHistory(object):
         '''
         instance = cls()
         setattr(instance, 'algorithm', 'A=ANALOG')
-        field_map = get_field_map('CodingHistory')
+        field_map = get_field_map('History')
         atbl_base = airtable.connect_one_base("Assets")
         atbl_tbl = atbl_base['Digital Assets']
         atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
@@ -153,7 +153,7 @@ class BroadcastWaveFile(object):
     def __init__(self, **kwargs):
         required_fields = ['Description', 'Originator', 'originationDate',
                            'originationTime', 'originatorReference', 'Version',
-                           'codingHistory', 'IARL', 'ICOP', 'ICRD', 'INAM',
+                           'History', 'IARL', 'ICOP', 'ICRD', 'INAM',
                            'ITCH', 'ISFT', 'ISRC']
         optional_fields = ['UMID', 'timeReference', 'ICMT', 'IENG', 'IKEY',
                            'ISBJ', 'ISRF']
@@ -212,23 +212,25 @@ class BroadcastWaveFile(object):
         for field, mapping in field_map.items():
             try:
                 foo = mapping['atbl']
-            except (KeyError, TypeError):
+            except KeyError: 
+                if field == 'Description':
+                    bwf_description = BWFDescription().from_atbl(digital_asset_id)
+                    value = getattr(bwf_description, "Description")
+                    setattr(instance, field, value)
+                    continue
+            except TypeError:
                 continue
             try:
                 value = atbl_rec_digital_asset['fields'][mapping['atbl']]
             except KeyError:
-                if field == 'codingHistory':
+                if field == 'History':
                     try:
-                        # value = atbl_rec_digital_asset['fields']['A-D Transfers (BWF)']
+                        foo = atbl_rec_digital_asset['fields']['A-D Transfers (BWF)']
                         bwf_codhist = CodingHistory().from_atbl(digital_asset_id)
                         value = getattr(bwf_codhist, "CodingHistory")
                     except KeyError:
                         raise RuntimeError("no Coding History specified in 'Coding History' field, no A-D Transfer linked. \
                                            Cannot create Coding History for this asset. Exiting...")
-                elif field == 'Description':
-                    try:
-                        bwf_description = BWFDescription().from_atbl(digital_asset_id)
-                        value = getattr(bwf_description, "Description")
                 else:
                     continue
             if isinstance(value, list):
@@ -245,6 +247,7 @@ class BroadcastWaveFile(object):
         for attr_name, value in self.__dict__.items():
             chunk_str = '--' + attr_name + '="' + value + '" '
             bwf_meta_str += chunk_str
+        print(bwf_meta_str)
         return bwf_meta_str.strip()
 
     def to_bwf_meta_list(self):
