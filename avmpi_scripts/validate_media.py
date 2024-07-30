@@ -1,6 +1,7 @@
 '''
 uses MediaConch to validate media files
 '''
+import os
 import logging
 import pathlib
 import subprocess
@@ -9,17 +10,29 @@ import make_log
 import util
 
 
-def run_mediaconch():
+def run_mediaconch(media_fullpath, policy_fullpath):
     '''
     actually calls MediaConch and handles output
     '''
+    cmd = ["mediaconch", "-p", policy_fullpath, media_fullpath]
+    util.run_command(cmd)
 
 
 def validate_media(kwvars):
     '''
     manages the process of validating media files with MediaConch
     '''
-    logger.info("yep")
+    logger.info(f"validating {kwvars['daid']}...")
+    if kwvars['dadir']:
+        media_path = pathlib.Path(kwvars['dadir'])
+    else:
+        media_path = os.getcwd()
+        logger.warning(f"no Digital Asset Directory (-dadir) supplied, using current working directory: {media_path}")
+        media_path = pathlib.Path(media_path)
+    media_name = kwvars['daid']
+    media_fullpath = media_path / media_name
+    policy_fullpath = pathlib.Path(kwvars['policy'])
+    run_mediaconch(media_fullpath, policy_fullpath)
 
 
 def parse_args(args):
@@ -33,8 +46,13 @@ def parse_args(args):
         kwvars['loglevel_print'] = logging.DEBUG
     else:
         kwvars['loglevel_print'] = logging.INFO
+    if not args.daid:
+        raise RuntimeError("no Digital Asset ID (-daid) supplied, exiting...")
     kwvars['daid'] = args.daid
     kwvars['dadir'] = args.dadir
+    if not args.policy:
+        raise RuntimeError("no MediaConch Policy (-p) supplied, exiting...")
+    kwvars['policy'] = args.policy
     return kwvars
 
 
@@ -72,6 +90,7 @@ def main():
     logger = make_log.init_log(loglevel_print=kwvars['loglevel_print'])
     validate_media(kwvars)
     logger.info("embed_md has completed successfully")
+
 
 if __name__ == '__main__':
     main()
