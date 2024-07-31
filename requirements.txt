@@ -1,5 +1,4 @@
 annotated-types==0.7.0
--e git+ssh://git@github.com/brnco/avmpi_scripts.git@c8a8608ebeae41dd9e47f05a9495fa8f6ee46883#egg=avmpi_scripts
 cachetools==5.3.3
 certifi==2024.2.2
 chardet==5.2.0
