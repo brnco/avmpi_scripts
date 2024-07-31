@@ -22,7 +22,7 @@ To do this, we use the [venv module](https://docs.python.org/3/library/venv.html
 
 Navigate to the top level directory of this repo and run the following command
 
-`python -m venv venv`
+`python3 -m venv venv`
 
 ## Start the Virtual Environment
 
@@ -36,7 +36,7 @@ To do that on Mac, run
 
 All of the dependencies are detailed in `requirements.txt`. To install them, use
 
-`python -m pip -r requirements.txt`
+`python3 -m pip -r requirements.txt`
 
 This will take a minute, you'll see a lot of text onscreen.
 
@@ -46,7 +46,7 @@ You should now be all set to run the scripts!
 
 If you get a `ModuleNotFoundError` or `ImportError` when you run a script, you can install the offending module to the `venv` using
 
-`python -m pip install [module_name]`
+`python3 -m pip install [module_name]`
 
 # Airtable configuration
 
