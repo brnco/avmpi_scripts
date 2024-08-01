@@ -1,0 +1,479 @@
+{
+    "PhysicalAssetRecord": {
+        "physical_asset_id": {
+            "xlsx": {
+                "column": "A",
+                "required": true
+            },
+            "atbl": "Physical Asset ID"
+        },
+        "DigitalAsset": {
+            "xlsx": {
+                "column": "B",
+                "required": true
+            },
+            "atbl": "Digital Assets"
+        },
+        "mtd_submitted_by": {
+            "xlsx": {
+                "column": "C",
+                "required": true
+            },
+            "atbl": "Metadata Submitted By"
+        },
+        "media_type": {
+            "xlsx": {
+                "column": "D",
+                "required": true
+            },
+            "atbl": {
+                "name": "Media Type",
+                "type": "singleSelect"
+            }
+        },
+        "PhysicalFormat": {
+            "xlsx": {
+                "column": "E",
+                "required": true
+            },
+            "atbl": {
+                "name": "Physical Format",
+                "type": "linked_syncd"
+            }
+        },
+        "LocationPrep": {
+            "xlsx": {
+                "column": "F",
+                "required": true
+            },
+            "atbl": {
+                "name": "Current Location",
+                "type": "linked_syncd",
+                "origin_base_id": "appWtd175HSokQgQP",
+                "origin_table_name": "Locations"
+            }
+        },
+        "LocationDelivery": {
+            "xlsx": {
+                "column": "G",
+                "required": true
+            },
+            "atbl": {
+                "name": "Delivery Location",
+                "type": "linked_syncd",
+                "origin_base_id": "appWtd175HSokQgQP",
+                "origin_table_name": "Locations"
+            }
+        },
+        "Collection": {
+            "xlsx": {
+                "column": "H",
+                "required": true
+            },
+            "atbl": {
+                "name": "Collection",
+                "type": "linked_syncd",
+                "origin_base_id": "appWtd175HSokQgQP",
+                "origin_table_name": "Collections"
+            }
+        },
+        "title": {
+            "xlsx": {
+                "column": "I",
+                "required": true
+            },
+            "atbl": "Title - Free text"
+        },
+        "size_value": {
+            "xlsx": {
+                "column": "J",
+                "required": true
+            },
+            "atbl": {
+                "name": "Size",
+                "type": "number"
+            }
+        },
+        "size_type": {
+            "xlsx": {
+                "column": "K",
+                "required": true
+            },
+            "atbl": {
+                "name": "Size Type",
+                "type": "singleSelect"
+            }
+        },
+        "secondary_asset_id": {
+            "xlsx": "L",
+            "atbl": "Secondary Asset ID"
+        },
+        "part": {
+            "xlsx": "M",
+            "atbl": "Part"
+        },
+        "asset_barcode": {
+            "xlsx": "N",
+            "atbl": {
+                "name": "Asset Barcode",
+                "type": "barcode"
+            }
+        },
+        "original_container": {
+            "xlsx": "O",
+            "atbl": "Original Container"
+        },
+        "accessories": {
+            "xlsx": "P",
+            "atbl": "Accessories"
+        },
+        "creator": {
+            "xlsx": "Q",
+            "atbl": "Creator"
+        },
+        "date_value": {
+            "xlsx": "R",
+            "atbl": {
+                "name": "Date",
+                "type": "date"
+            }
+        },
+        "date_notes": {
+            "xlsx": "S",
+            "atbl": "Date Notes"
+        },
+        "brand_stock": {
+            "xlsx": "T",
+            "atbl": {
+                "name": "Brand-stock",
+                "type": "multipleSelect"
+            }
+        },
+        "base_substrate": {
+            "xlsx": "U",
+            "atbl": {
+                "name": "Base-Substrate Layer",
+                "type": "singleSelect"
+            }
+        },
+        "color": {
+            "xlsx": "V",
+            "atbl": {
+                "name": "Color",
+                "type": "multipleSelect"
+            }
+        },
+        "sound": {
+            "xlsx": "W",
+            "atbl": {
+                "name": "Sound",
+                "type": "multipleSelect"
+            }
+        },
+        "speed": {
+            "xlsx": "X",
+            "atbl": {
+                "name": "Speed",
+                "type": "number"
+            }
+        },
+        "speed_type": {
+            "xlsx": "Y",
+            "atbl": {
+                "name": "Speed Type",
+                "type": "singleSelect"
+            }
+        },
+        "duration": {
+            "xlsx": "Z",
+            "atbl": {
+                "name": "Duration",
+                "type": "number"
+            }
+        },
+        "content_description": {
+            "xlsx": "AA",
+            "atbl": "Content Description"
+        },
+        "item_rights_note": {
+            "xlsx": "AB",
+            "atbl": "Item Rights Note"
+        },
+        "generation_notes": {
+            "xlsx": "AC",
+            "atbl": "Generation Notes"
+        },
+        "condition_notes": {
+            "xlsx": "AD",
+            "atbl": "Condition Inspection Notes"
+        },
+        "documentation": {
+            "xlsx": "AE",
+            "atbl": "Documentation"
+        },
+        "prior_conservation": {
+            "xlsx": "AF",
+            "atbl": "Prior Conservation Activities"
+        },
+        "regional_encoding": {
+            "xlsx": "AG",
+            "atbl": {
+                "name": "Regional Encoding",
+                "type": "singleSelect"
+            }
+        },
+        "noise_reduction_encoding": {
+            "xlsx": "AH",
+            "atbl": {
+                "name": "Noise Reduction Encoding",
+                "type": "singleSelect"
+            }
+        },
+        "general_notes": {
+            "xlsx": "AI",
+            "atbl": ""
+        }
+    },
+    "PhysicalAssetActionRecord": {
+        "activity_type": {
+            "xlsx": "A",
+            "atbl": {
+                "name": "Activity Type",
+                "type": "singleSelect"
+            }
+        },
+        "PhysicalAsset": {
+            "xlsx": "B",
+            "atbl": "Asset"
+        }
+    },
+    "DigitalAssetRecord": {
+        "digital_asset_id": {
+            "xlsx": "A",
+            "atbl": "Digital Asset ID"
+        },
+        "PhysicalAsset": {
+            "xlsx": "B",
+            "atbl": "Original Physical Asset"
+        },
+        "physical_asset_barcode": {
+            "xlsx": {
+                "column": "C",
+                "required": true
+            },
+            "atbl": ""
+        },
+        "Container": {
+            "xlsx": {
+                "column": "D",
+                "required": true
+            },
+            "atbl": "Container"
+        },
+        "md5": {
+            "xlsx": {
+                "column": "E",
+                "required": true
+            },
+            "atbl": "MD5 Checksum Value"
+        },
+        "digital_part": {
+            "xlsx": "F",
+            "atbl": "Digital Part"
+        },
+        "transfer_issue": {
+            "xlsx": "G",
+            "atbl": "Transfer Issue-Anomaly Notes"
+        },
+        "coding_history": {
+            "xlsx": {
+                "column": "H",
+                "required": true
+            },
+            "atbl": "Coding History"
+        },
+        "asset_creator": {
+            "xlsx": "I",
+            "atbl": "Asset Creator"
+        },
+        "asset_creation_date": {
+            "xlsx": "J",
+            "atbl": {
+                "name": "Asset Creation Date",
+                "type": "date"
+            }
+        },
+        "asset_size": {
+            "xlsx": "K",
+            "atbl": {
+                "name": "Asset Size",
+                "type": "number"
+            }
+        },
+        "asset_duration": {
+            "xlsx": "L",
+            "atbl": {
+                "name": "Asset Duration",
+                "type": "duration"
+            }
+        }
+    },
+    "BroadcastWaveFile": {
+        "Description": {
+            "xlsx": {
+                "column": "B",
+                "required": true
+            }
+        },
+        "Originator": {
+            "xlsx": {
+                "column": "C",
+                "required": true
+            },
+            "atbl": "Originator (BWF)"
+        },
+        "originationDate": {
+            "xlsx": {
+                "column": "D",
+                "required": true
+            }
+        },
+        "originationTime": {
+            "xlsx": {
+                "column": "E",
+                "required": true
+            }
+        },
+        "originatorReference": {
+            "xlsx": {
+                "column": "F",
+                "required": true
+            },
+            "atbl": "originatorReference (BWF)"
+        },
+        "UMID": {
+            "xlsx": "G"
+        },
+        "Version": {
+            "xlsx": {
+                "column": "H",
+                "required": true
+            }
+        },
+        "timeReference": {
+            "xlsx": "I"
+        },
+        "History": {
+            "xlsx": {
+                "column": "J",
+                "required": true
+            },
+            "atbl": "Coding History"
+        },
+        "IARL": {
+            "xlsx": {
+                "column": "P",
+                "required": true
+            }
+        },
+        "ICMT": {
+            "xlsx": "Q",
+            "atbl": "Transfer Issue-Anomaly Notes"
+        },
+        "ICOP": {
+            "xlsx": {
+                "column": "R",
+                "required": true
+            }
+        },
+        "ICRD": {
+            "xlsx": {
+                "column": "S",
+                "required": true
+            },
+            "atbl": "ICRD (BWF)"
+        },
+        "INAM": {
+            "xlsx": {
+                "column": "T",
+                "required": true
+            },
+            "atbl": "Title - Free text (from Original Physical Asset)"
+        },
+        "ITCH": {
+            "xlsx": {
+                "column": "V",
+                "required": true
+            }
+        },
+        "IENG": {
+            "xlsx": "W",
+            "atbl": "A-D Transfer - Performed by (BWF)"
+        },
+        "IKEY": {
+            "xlsx": "Z"
+        },
+        "ISBJ": {
+            "xlsx": "AB"
+        },
+        "ISFT": {
+            "xlsx": {
+                "column": "AC",
+                "required": true
+            }
+        },
+        "ISRC": {
+            "xlsx": "AE"
+        },
+        "ISRF": {
+            "xlsx": "AF",
+            "atbl": "ISRF (BWF)"
+        }
+    },
+    "History": {
+        "sampling_frequency": {
+            "atbl": {
+                "name": "Sampling Frequency (BWF)",
+                "prefix": "F="
+            }
+        },
+        "word_length": {
+            "atbl": {
+                "name": "Bit Depth (BWF)",
+                "prefix": "W="
+            }
+        },
+        "mode": {
+            "atbl": {
+                "name": "Audio Channel (BWF)",
+                "prefix": "M="
+            }
+        },
+        "txtfs_equipment_model":{
+            "atbl": "Equipment Used - Digitization (BWF)"
+        },
+        "txtfs_equipment_sn": {
+            "atbl": "Equipment SN (BWF)"
+        },
+        "txtfs_speed_value": {
+            "atbl": "Speed (BWF)"
+        },
+        "txtfs_speed_type": {
+            "atbl": "Speed Type (BWF)"
+        }
+    },
+    "BWFDescription": {
+        "id_main": {
+            "atbl": {
+                "name": "originatorReference (BWF)",
+                "prefix": "unit_id, "
+            }
+        },
+        "id_avmpi_barcode": {
+            "atbl": {
+                "name": "avmpi_barcode (BWF)",
+                "prefix": "avmpi_barcode, "
+            }
+        }
+    }
+}

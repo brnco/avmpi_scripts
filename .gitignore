@@ -7,3 +7,4 @@ build/
 .tox/
 .coverage/
 .coverage
+avmpi_scripts/services/airtable/airtable_config.json
