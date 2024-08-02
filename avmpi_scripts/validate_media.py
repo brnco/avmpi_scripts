@@ -13,26 +13,70 @@ import util
 def run_mediaconch(media_fullpath, policy_fullpath):
     '''
     actually calls MediaConch and handles output
+
+    returncode == 0 means that MC ran on the file
+    returncode == 1 means that MC had a problem, like file didn't exist
+
+    output.stdout == True when MC runs successfully
+    output.stdout == False when MC has a problem
+    output.stderr == True when MC has a problem
+
+    output.stdout.startswith('pass') when file passes
+    output.stdout.startswith('fail') when file fails
     '''
-    cmd = ["mediaconch", "-p", policy_fullpath, media_fullpath]
-    util.run_command(cmd)
+    cmd = ["mediaconch", "-p", str(policy_fullpath), str(media_fullpath)]
+    output = util.run_command(cmd, return_output=True)
+    if output.startswith('pass'):
+        logger.info(f"file {media_fullpath.name} passed validation")
+        return True
+    elif output.startswith('fail'):
+        logger.info(f"file {media_fullpath.name} failed validation")
+        return output
+    else:
+        raise RunetimeError("the script encountered an error trying to validate that file")
+
+
+def get_files_to_validate(folder_path):
+    '''
+    if we're running this in batch mode
+    we need to get every file with .mkv or .dv extension
+    '''
+    extensions_to_check = [".mkv", ".dv"]
+    all_files = []
+    for ext in extensions_to_check:
+        files_w_this_ext = folder_path.glob('**/*' + ext)
+        all_files.extend(files_w_this_ext)
+    return all_files
 
 
 def validate_media(kwvars):
     '''
     manages the process of validating media files with MediaConch
     '''
-    logger.info(f"validating {kwvars['daid']}...")
-    if kwvars['dadir']:
-        media_path = pathlib.Path(kwvars['dadir'])
-    else:
-        media_path = os.getcwd()
-        logger.warning(f"no Digital Asset Directory (-dadir) supplied, using current working directory: {media_path}")
-        media_path = pathlib.Path(media_path)
-    media_name = kwvars['daid']
-    media_fullpath = media_path / media_name
     policy_fullpath = pathlib.Path(kwvars['policy'])
-    run_mediaconch(media_fullpath, policy_fullpath)
+    fails = []
+    if not kwvars['daid']:
+        logger.info(f"validating every file in {kwvars['dadir']}")
+        files_to_validate = get_files_to_validate(kwvars['dadir'])
+        logger.info(f"found {len(files_to_validate)} files to validate")
+    else:
+        if kwvars['dadir']:
+            media_path = pathlib.Path(kwvars['dadir'])
+        else:
+            media_path = os.getcwd()
+            logger.warning(f"no Digital Asset Directory (-dadir) supplied, using current working directory: {media_path}")
+            media_path = pathlib.Path(media_path)
+        files_to_validate = [media_path / kwvars['daid']]
+    for file in files_to_validate:
+        logger.info(f"validating {file}...")
+        result = run_mediaconch(file, policy_fullpath)
+        if result is not True:
+            fails.append({str(media_fullpath): result})
+    if fails:
+        logger.warning(f"{len(fails)} files did not pass validation")
+        for failed_file in fails:
+            logger.warning(pformat(failed_file))
+            input("check that out")
 
 
 def parse_args(args):
