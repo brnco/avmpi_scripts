@@ -6,6 +6,7 @@ import logging
 import pathlib
 import subprocess
 import argparse
+from pprint import pformat
 import make_log
 import util
 
@@ -71,7 +72,7 @@ def validate_media(kwvars):
         logger.info(f"validating {file}...")
         result = run_mediaconch(file, policy_fullpath)
         if result is not True:
-            fails.append({str(media_fullpath): result})
+            fails.append({str(file): result})
     if fails:
         logger.warning(f"{len(fails)} files did not pass validation")
         for failed_file in fails:
@@ -90,10 +91,9 @@ def parse_args(args):
         kwvars['loglevel_print'] = logging.DEBUG
     else:
         kwvars['loglevel_print'] = logging.INFO
-    if not args.daid:
-        raise RuntimeError("no Digital Asset ID (-daid) supplied, exiting...")
     kwvars['daid'] = args.daid
-    kwvars['dadir'] = args.dadir
+    if args.dadir:
+        kwvars['dadir'] = pathlib.Path(args.dadir)
     if not args.policy:
         raise RuntimeError("no MediaConch Policy (-p) supplied, exiting...")
     kwvars['policy'] = args.policy
