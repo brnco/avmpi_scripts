@@ -37,6 +37,21 @@ def run_mediaconch(media_fullpath, policy_fullpath):
         raise RunetimeError("the script encountered an error trying to validate that file")
 
 
+def send_results_to_airtable(passes, fails, atbl_tbl):
+    '''
+    actually sends the results of the validation to Airtable QC Log
+    '''
+    logger.info("sending results to Airtable...")
+    for passed_file in passes:
+        result = airtable.find(passed_file['daid'], "Digital Asset ID", atbl_tbl)
+        if result:
+            # waiting for email about what to do here
+            # either replace current QC Log record orcreate a new one
+        else:
+            # create new QC Log record {"daid": daid, "result": ["passed"]}
+    # then do the same for fails, but include fail log from MC
+
+
 def get_files_to_validate(folder_path):
     '''
     if we're running this in batch mode
@@ -109,8 +124,10 @@ def validate_media(kwvars):
             else:
                 break
         if user_input == 'y':
-            reviewed_passes, fails = review_failed_files(fails)
+            reviewed_passes, reviewed_fails = review_failed_files(fails)
             passes.extend(reviewed_passes)
+        else:
+            reviewed_fails = fails
     formatted_passes = [item['daid'] for item in passes]
     formatted_fails = [item['daid'] for item in fails]
     logger.info("here's the Digital Asset IDs for passing files:")
@@ -118,6 +135,7 @@ def validate_media(kwvars):
     input("press any key to continue")
     logger.info("here's the Digital Asset IDs for failing files:")
     logger.info(pformat(formatted_fails))
+    send_results_to_airtable(reviewed_passes, reviewed_fails, atbl_tbl)
 
 
 def parse_args(args):
