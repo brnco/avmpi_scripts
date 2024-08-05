@@ -71,7 +71,7 @@ def review_failed_files(failed_files):
             rev_fails.append(failed_file)
         else:
             rev_passes.append({"daid": failed_file['daid']})
-    return rev_fails, rev_passes
+    return rev_passes, rev_fails
 
 
 def validate_media(kwvars):
@@ -111,6 +111,13 @@ def validate_media(kwvars):
         if user_input == 'y':
             reviewed_passes, fails = review_failed_files(fails)
             passes.extend(reviewed_passes)
+    formatted_passes = [item['daid'] for item in passes]
+    formatted_fails = [item['daid'] for item in fails]
+    logger.info("here's the Digital Asset IDs for passing files:")
+    logger.info(pformat(formatted_passes))
+    input("press any key to continue")
+    logger.info("here's the Digital Asset IDs for failing files:")
+    logger.info(pformat(formatted_fails))
 
 
 def parse_args(args):
