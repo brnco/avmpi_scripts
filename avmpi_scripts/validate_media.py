@@ -50,12 +50,37 @@ def get_files_to_validate(folder_path):
     return all_files
 
 
+def review_failed_files(failed_files):
+    '''
+    UX for reviewing the files that failed validation
+    '''
+    rev_fails = []
+    rev_passes = []
+    for failed_file in failed_files:
+        _log_lst = failed_file['log'].split("  --  ")
+        log_list = [x.strip() for x in _log_lst]
+        logger.warning(f"Digital Asset ID: {failed_file['daid']}")
+        logger.warning(pformat(log_list))
+        while True:
+            user_input = input("press F to Fail this file, press P to Pass it: ").upper()
+            if user_input not in ['F', 'P']:
+                print("invalid choice, please type F or P")
+            else:
+                break
+        if user_input == "F":
+            rev_fails.append(failed_file)
+        else:
+            rev_passes.append({"daid": failed_file['daid']})
+    return rev_fails, rev_passes
+
+
 def validate_media(kwvars):
     '''
     manages the process of validating media files with MediaConch
     '''
     policy_fullpath = pathlib.Path(kwvars['policy'])
     fails = []
+    passes = []
     if not kwvars['daid']:
         logger.info(f"validating every file in {kwvars['dadir']}")
         files_to_validate = get_files_to_validate(kwvars['dadir'])
@@ -72,12 +97,20 @@ def validate_media(kwvars):
         logger.info(f"validating {file}...")
         result = run_mediaconch(file, policy_fullpath)
         if result is not True:
-            fails.append({str(file): result})
+            fails.append({"daid": file.name, "log": result})
+        else:
+            passes.append({"daid": file.name})
     if fails:
         logger.warning(f"{len(fails)} files did not pass validation")
-        for failed_file in fails:
-            logger.warning(pformat(failed_file))
-            input("check that out")
+        while True:
+            user_input = input("Do you want to review the failed files? y/n ").lower()
+            if user_input not in ['y', 'n']:
+                print("invalid choice, please type y or n")
+            else:
+                break
+        if user_input == 'y':
+            reviewed_passes, fails = review_failed_files(fails)
+            passes.extend(reviewed_passes)
 
 
 def parse_args(args):
