@@ -37,17 +37,35 @@ def run_mediaconch(media_fullpath, policy_fullpath):
         raise RunetimeError("the script encountered an error trying to validate that file")
 
 
-def send_results_to_airtable(passes, fails, atbl_tbl):
+def get_linked_digital_asset_record(daid, atbl_base):
+    '''
+    QC Log table links to digital asset table
+    we need to pop record_id from Digital Assets record into QC Log, for new records
+    '''
+    atbl_tbl = atbl_base['Digital Assets']
+    result = atbl_tbl.find(daid, "Digital Asset ID", atbl_tbl)
+
+
+
+
+def send_results_to_airtable(passes, fails):
     '''
     actually sends the results of the validation to Airtable QC Log
     '''
     logger.info("sending results to Airtable...")
+    atbl_conf = airtable.config()
+    atbl_base = airtable.connect_one_base('Assets', atbl_conf)
+    atbl_tbl = atbl_base['QC Log']
     for passed_file in passes:
-        result = airtable.find(passed_file['daid'], "Digital Asset ID", atbl_tbl)
+        result = airtable.find(passed_file['daid'], "Digital Asset", atbl_tbl)
         if result:
-            # waiting for email about what to do here
-            # either replace current QC Log record orcreate a new one
+            logger.info(f"updating {passed_file['daid']}")
+            atbl_tbl.update(result['id'], {"MediaConch": ["Pass"]})
         else:
+            # get digital asset record and link it
+            atbl_rec_digital_asset = get_linked_digital_asset_record(passed_file['daid'])
+            atbl_tbl.create({"Digital Asset": [atbl_rec_digital_asset],
+                            "MediaConch": ["Pass"]})
             # create new QC Log record {"daid": daid, "result": ["passed"]}
     # then do the same for fails, but include fail log from MC
 
@@ -135,7 +153,7 @@ def validate_media(kwvars):
     input("press any key to continue")
     logger.info("here's the Digital Asset IDs for failing files:")
     logger.info(pformat(formatted_fails))
-    send_results_to_airtable(reviewed_passes, reviewed_fails, atbl_tbl)
+    send_results_to_airtable(reviewed_passes, reviewed_fails)
 
 
 def parse_args(args):
