@@ -7,6 +7,7 @@ import pathlib
 import subprocess
 import argparse
 from pprint import pformat
+import services.airtable.airtable as airtable
 import make_log
 import util
 
@@ -43,9 +44,11 @@ def get_linked_digital_asset_record(daid, atbl_base):
     we need to pop record_id from Digital Assets record into QC Log, for new records
     '''
     atbl_tbl = atbl_base['Digital Assets']
-    result = atbl_tbl.find(daid, "Digital Asset ID", atbl_tbl)
-
-
+    result = airtable.find(daid, "Digital Asset ID", atbl_tbl, True)
+    if result:
+        return result
+    else:
+        raise RuntimeError(f"no asset found in {atbl_tbl} with Digital Asset ID {daid}")
 
 
 def send_results_to_airtable(passes, fails):
@@ -53,21 +56,28 @@ def send_results_to_airtable(passes, fails):
     actually sends the results of the validation to Airtable QC Log
     '''
     logger.info("sending results to Airtable...")
-    atbl_conf = airtable.config()
-    atbl_base = airtable.connect_one_base('Assets', atbl_conf)
+    atbl_base = airtable.connect_one_base('Assets')
     atbl_tbl = atbl_base['QC Log']
     for passed_file in passes:
-        result = airtable.find(passed_file['daid'], "Digital Asset", atbl_tbl)
+        result = airtable.find(passed_file['daid'], "Digital Asset", atbl_tbl, True)
         if result:
-            logger.info(f"updating {passed_file['daid']}")
-            atbl_tbl.update(result['id'], {"MediaConch": ["Pass"]})
+            logger.info(f"updating QC Log record for {passed_file['daid']}")
+            atbl_tbl.update(result['id'], {"MediaConch": ["Pass"], "QC Issues": ""})
         else:
-            # get digital asset record and link it
-            atbl_rec_digital_asset = get_linked_digital_asset_record(passed_file['daid'])
-            atbl_tbl.create({"Digital Asset": [atbl_rec_digital_asset],
-                            "MediaConch": ["Pass"]})
-            # create new QC Log record {"daid": daid, "result": ["passed"]}
-    # then do the same for fails, but include fail log from MC
+            logger.info(f"creating new QC Log record for {passed_file['daid']}")
+            atbl_rec_digital_asset = get_linked_digital_asset_record(passed_file['daid'], atbl_base)
+            atbl_tbl.create({"Digital Asset": [atbl_rec_digital_asset['id']],
+                             "MediaConch": ["Pass"], "QC Issues": ""})
+    for failed_file in fails:
+        result = airtable.find(failed_file['daid'], "Digital Asset", atbl_tbl, True)
+        if result:
+            logger.info(f"updating QC Log record for {failed_file['daid']}")
+            atbl_tbl.update(result['id'], {"MediaConch": ["Fail"], "QC Issues": failed_file['log']})
+        else:
+            logger.info(f"creating new QC Log record for {failed_file['daid']}")
+            atbl_rec_digital_asset = get_linked_digital_asset_record(failed_file['daid'], atbl_base)
+            atbl_tbl.create({"Digital Asset": [atbl_rec_digital_asset['id']],
+                             "MediaConch": ['Fail'], "QC Issues": failed_file['log']})
 
 
 def get_files_to_validate(folder_path):
@@ -146,6 +156,10 @@ def validate_media(kwvars):
             passes.extend(reviewed_passes)
         else:
             reviewed_fails = fails
+            reviewed_passes = passes
+    else:
+        reviewed_fails = []
+        reviewed_passes = passes
     formatted_passes = [item['daid'] for item in passes]
     formatted_fails = [item['daid'] for item in fails]
     logger.info("here's the Digital Asset IDs for passing files:")
@@ -153,6 +167,7 @@ def validate_media(kwvars):
     input("press any key to continue")
     logger.info("here's the Digital Asset IDs for failing files:")
     logger.info(pformat(formatted_fails))
+    input("press any key to continue")
     send_results_to_airtable(reviewed_passes, reviewed_fails)
 
 
