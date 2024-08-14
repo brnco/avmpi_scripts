@@ -54,7 +54,11 @@ class CodingHistory(object):
                 continue
             except TypeError:
                 # means this is a txtfs field
-                value = atbl_rec_digital_asset['fields'][mapping['atbl']]
+                try:
+                    value = atbl_rec_digital_asset['fields'][mapping['atbl']]
+                except KeyError:
+                    details = "Was this created with the old workflow? Exiting..."
+                    raise RuntimeError(f"not enough info to create Coding History for this asset. {details}")
             if isinstance(value, list):
                 if len(value) == 1:
                     value = value[0]
@@ -224,14 +228,8 @@ class BroadcastWaveFile(object):
                 value = atbl_rec_digital_asset['fields'][mapping['atbl']]
             except KeyError:
                 if field == 'History':
-                    try:
-                        foo = atbl_rec_digital_asset['fields']['A-D Transfers (BWF)']
-                        bwf_codhist = CodingHistory().from_atbl(digital_asset_id)
-                        value = getattr(bwf_codhist, "CodingHistory")
-                    except KeyError:
-                        details = ("No Coding History specified in 'Coding History' field and no linked A-D Transfer. "
-                                   "Exiting...")
-                        raise RuntimeError(f"Cannot create Coding History for {digital_asset_id}. {details}")
+                    bwf_codhist = CodingHistory().from_atbl(digital_asset_id)
+                    value = getattr(bwf_codhist, "CodingHistory")
                 else:
                     continue
             if isinstance(value, list):
