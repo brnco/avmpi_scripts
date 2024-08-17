@@ -2,6 +2,7 @@
 uses MediaConch to validate media files
 '''
 import os
+import json
 import logging
 import pathlib
 import subprocess
@@ -10,6 +11,17 @@ from pprint import pformat
 import services.airtable.airtable as airtable
 import make_log
 import util
+
+
+def config():
+    '''
+    creates/ returns config object for MediaConch/ validation setup
+    validate_media_config.json located in same dir as this script
+    '''
+    this_dirpath = pathlib.Path(__file__).parent.absolute()
+    with open(this_dirpath / 'validate_media_config.json', 'r') as config_file:
+        validation_config = json.load(config_file)
+    return validation_config
 
 
 def run_mediaconch(media_fullpath, policy_fullpath):
@@ -80,6 +92,20 @@ def send_results_to_airtable(passes, fails):
                              "MediaConch": ['Fail'], "QC Issues": failed_file['log']})
 
 
+def detect_policy_for_file(file, conf):
+    '''
+    determines which policy in config to use for which file
+    '''
+    file_path = pathlib.Path(file)
+    policies = conf['policies']
+    file_ext = file_path.suffix
+    try:
+        file_validation_policy = policies[file_ext]
+    except Exception:
+        raise RuntimeError(f"No policy specified for {file_ext} for file {str(file_path)}")
+    return pathlib.Path(file_validation_policy)
+
+
 def get_files_to_validate(folder_path):
     '''
     if we're running this in batch mode
@@ -121,7 +147,7 @@ def validate_media(kwvars):
     '''
     manages the process of validating media files with MediaConch
     '''
-    policy_fullpath = pathlib.Path(kwvars['policy'])
+    conf = config()
     fails = []
     passes = []
     if not kwvars['daid']:
@@ -137,6 +163,10 @@ def validate_media(kwvars):
             media_path = pathlib.Path(media_path)
         files_to_validate = [media_path / kwvars['daid']]
     for file in files_to_validate:
+        if kwvars['policy']:
+            policy_fullpath = pathlib.Path(kwvars['policy'])
+        else:
+            policy_fullpath = detect_policy_for_file(file, conf)
         logger.info(f"validating {file}...")
         result = run_mediaconch(file, policy_fullpath)
         if result is not True:
@@ -185,8 +215,8 @@ def parse_args(args):
     kwvars['daid'] = args.daid
     if args.dadir:
         kwvars['dadir'] = pathlib.Path(args.dadir)
-    if not args.policy:
-        raise RuntimeError("no MediaConch Policy (-p) supplied, exiting...")
+    else:
+        kwvars['dadir'] = None
     kwvars['policy'] = args.policy
     return kwvars
 
@@ -209,7 +239,9 @@ def init_args():
     parser.add_argument('-dadir', '--digital_asset_directory', dest='dadir', default=None,
                         help="the directory where the Digital Asset is located")
     parser.add_argument('-p', '--policy', dest='policy', default=None,
-                        help="the MediaConch policy that we want to validate against")
+                        help="the MediaConch policy that we want to validate against\n"
+                        "leave out this option and the script will auto-detect the policy\n"
+                        "based on the file extension in validate_media_config.json")
     args = parser.parse_args()
     return args
 
