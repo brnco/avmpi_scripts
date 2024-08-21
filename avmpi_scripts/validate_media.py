@@ -112,11 +112,13 @@ def get_files_to_validate(folder_path):
     we need to get every file with .mkv or .dv extension
     '''
     extensions_to_check = [".mkv", ".dv"]
+    files_to_check = []
     all_files = []
     for ext in extensions_to_check:
         files_w_this_ext = folder_path.glob('**/*' + ext)
         all_files.extend(files_w_this_ext)
-    return all_files
+    files_to_check = [file for file in all_files if not str(file).startswith('.')]
+    return files_to_check
 
 
 def review_failed_files(failed_files):
