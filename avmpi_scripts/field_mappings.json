@@ -428,6 +428,9 @@
         "ISRF": {
             "xlsx": "AF",
             "atbl": "ISRF (BWF)"
+        },
+        "ICOP": {
+            "atbl": "Copyright (BWF)"
         }
     },
     "BWFDescription": {
