@@ -111,13 +111,17 @@ def get_files_to_validate(folder_path):
     if we're running this in batch mode
     we need to get every file with .mkv or .dv extension
     '''
+    if not folder_path.is_dir():
+        raise RuntimeError(f"supplied directory {folder_path} does not exist")
     extensions_to_check = [".mkv", ".dv"]
     files_to_check = []
     all_files = []
     for ext in extensions_to_check:
         files_w_this_ext = folder_path.glob('**/*' + ext)
         all_files.extend(files_w_this_ext)
-    files_to_check = [file for file in all_files if not str(file).startswith('.')]
+    files_to_check = [file for file in all_files if not file.name.startswith('.')]
+    input(all_files)
+    input(files_to_check)
     return files_to_check
 
 
