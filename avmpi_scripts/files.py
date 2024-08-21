@@ -172,6 +172,8 @@ class BroadcastWaveFile(object):
                 if len(value) == 1:
                     value = value[0]
             setattr(instance, field, value)
+        setattr(instance, 'OriginationDate', 'TIMESTAMP')
+        setattr(instance, 'OriginationTime', 'TIMESTAMP')
         return instance
 
     def to_bwf_meta_str(self):
