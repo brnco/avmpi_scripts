@@ -120,8 +120,6 @@ def get_files_to_validate(folder_path):
         files_w_this_ext = folder_path.glob('**/*' + ext)
         all_files.extend(files_w_this_ext)
     files_to_check = [file for file in all_files if not file.name.startswith('.')]
-    input(all_files)
-    input(files_to_check)
     return files_to_check
 
 
