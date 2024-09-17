@@ -115,25 +115,36 @@ def init_args():
     '''
     initializes the arguments from the command line
     '''
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+            formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-q', '--quiet', dest='quiet',
                         action='store_true', default=False,
                         help="run script in quiet mode. "
-                        "only print warnings and errors to command line")
+                        "only print warnings and errors "
+                        "to command line")
     parser.add_argument('-v', '--verbose', dest='verbose',
                         action='store_true', default=False,
                         help="run script in verbose mode. "
                         "print all log messages to command line")
     parser.add_argument('-i', '--input', dest='input',metavar='',
                         help="the input Excel spreadsheet")
-    parser.add_argument('--no_validation', dest='no_validation', action='store_true', default=False, 
-                        help="overrides the validation of required fields for input Excel xlsx files")
-    parser.add_argument('-r', '--row', dest='row', default=0, type=int,
-                        help="uploads an individual row by row number, e.g. -r 5 will upload row 5")
-    parser.add_argument('-daid', '--digital_asset_id', dest='daid', default=None,
-                        help="the Digital Asset ID we would like to embed metadata for")
-    parser.add_argument('-dadir', '--digital_asset_directory', dest='dadir', default=None,
-                        help="the directory where the Digital Asset is located")
+    parser.add_argument('--no_validation', dest='no_validation',
+                        action='store_true', default=False, 
+                        help="overrides the validation "
+                        "of required fields for "
+                        "input Excel xlsx files")
+    parser.add_argument('-r', '--row', dest='row',
+                        default=0, type=int,
+                        help="uploads an individual row "
+                        "by row number, -r 5 will upload row 5")
+    parser.add_argument('-daid', '--digital_asset_id',
+                        dest='daid', default=None,
+                        help="the Digital Asset ID "
+                        "we would like to embed metadata for")
+    parser.add_argument('-dadir', '--digital_asset_directory',
+                        dest='dadir', default=None,
+                        help="the directory where "
+                        "the Digital Asset is located")
     args = parser.parse_args()
     return args
                             
