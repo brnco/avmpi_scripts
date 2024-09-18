@@ -8,10 +8,65 @@ import pathlib
 import logging
 import subprocess
 import csv
+import time
 from pprint import pformat
 import make_log
 import util
 import services.airtable.airtable as airtable
+
+
+def write_csv_row(row, output_file_path):
+    '''
+    takes input row dict and writes to CSV at path
+    '''
+    with open(output_file_path, 'w', newline='') as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writerow(atbl_rec['fields'])
+
+
+def write_csv_header(output_file_path, fieldnames):
+    '''
+    initializes CSV with header info
+    '''
+    with open(output_file_path, 'w', newline='') as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+
+
+def init_output_file(path):
+    '''
+    ensures that the output file exists before we try writing to it
+    '''
+    path = pathlib.Path(path)
+    if path.exists():
+        path.unlink()
+        time.sleep(1)
+    path.touch()
+
+
+def export_metadata(kwvars):
+    '''
+    manages the rpocess of exporting metadata form Airtable
+    '''
+    logger.info("preparing to export metadata from Airtbale to CSV...")
+    atbl_base = connect_one_base('Assets')
+    atbl_tbl = atbl_base['Digital Assets']
+    atbl_api = airtable.connect_api()
+    atbl_tbl_md = atbl_api.table(atbl_conf['bases']['Assets']['base_id'], 'Digital Assets')
+    atbl_tbl_schema = atbl_tbl.schema()
+    fieldnames = [field.name for field in atbl_tbl_md.schema().fields]
+    output_file_path = kwvars['output']
+    make_output_file(output_file_path)
+    write_csv_header(output_file_path, fieldnames)
+    if kwvars['excel_input']:
+        daids = excel.parse_sheet_for_daids(kwvars['excel_input'])
+        for digital_asset_id in daids:
+            atbl_rec = airtable.find(daid, 'Digital Asset ID', atbl_tbl, True)
+            write_csv_row(atbl_rec['fields'], output_file_path)
+    else:
+        for atbl_rec in atbl_tbl.all(view=kwvars['view']):
+            write_csv_row(atbl_rec['fields'], output_file_path)
+
 
 
 def make_output_path(args):
@@ -108,7 +163,7 @@ def main():
     global logger
     logger = make_log.init_log(loglevel_print=kwvars['loglevel_print'])
     logger.info(pformat(kwvars))
-    # export_metadata(kwvars)
+    export_metadata(kwvars)
     logger.info("export_md has completed successfully")
 
 

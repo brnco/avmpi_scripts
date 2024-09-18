@@ -597,6 +597,12 @@ def connect_one_base(base_name):
     return atbl_base
 
 
+def connect_api():
+    atbl_conf = config()
+    atbl_api = Api(atbl_conf['main']['api_key'])
+    return atbl_api
+
+
 def find(query, field, table, single_result=False):
     '''
     queries field in table

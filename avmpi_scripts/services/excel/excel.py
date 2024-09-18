@@ -51,7 +51,7 @@ def get_workbook_type(workbook):
     elif bwf_sheetnames == workbook_sheetnames:
         return 'Unit-BWF'
     else:
-        return None
+    return None
 
 
 def load_all_worksheets(filepath):
@@ -74,7 +74,7 @@ def load_all_worksheets(filepath):
                 continue
         except KeyError:
             pass
-        sheet = workbook[sheet_name]
+    sheet = workbook[sheet_name]
         start_row = conf[workbook_type][sheet_name]["first_row_with_data"]
         rows_dict = {}
         for row_index, row in enumerate(sheet.iter_rows(values_only=True, min_row=start_row), start=start_row):
@@ -120,3 +120,29 @@ def validate_required_fields(rows, record_type):
         if missing_columns:
             missing_values.append({"row": rows.index(row), "columns": missing_columns})
     return missing_values
+
+
+def parse_sheet_for_daids(excel_file_path):
+    '''
+    takes input excel sheet and parses it for Digital Asset IDs
+    returns list of daids
+    '''
+    logger.info("parsing Excel sheet for Digital Asset IDs...")
+    workbook = openpyxl.load_workbook(filepath)
+    workbook_type = get_workbook_type(workbook)
+    if workbook_type == 'Unit-AssetsMetadata':
+        sheet_name = 'Assets-Unit-Provided'
+        daid_column = 'B'
+    elif workbook_type == 'Vendor-AssetsMetadata':
+        sheet_name = 'Digital Assets'
+        daid_column = 'A'
+    else:
+        details = "Excel sheet needs to be formatted as either" \
+                    "Unit-AssetsMetadata or Vendor-AssetsMetadata"
+        raise RuntimeError(f"cannot parse Excel sheet, {details}")
+    sheets_data = load_all_worksheets(excel_file_path)
+    sheet = sheets_data[sheet_name]
+    daids = []
+    for row in sheet:
+        daids.append(row[daid_column])
+    return daids    
