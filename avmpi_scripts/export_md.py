@@ -13,15 +13,16 @@ from pprint import pformat
 import make_log
 import util
 import services.airtable.airtable as airtable
+import services.excel.excel as excel
 
 
-def write_csv_row(row, output_file_path):
+def write_csv_row(row, fieldnames, output_file_path):
     '''
     takes input row dict and writes to CSV at path
     '''
-    with open(output_file_path, 'w', newline='') as csv_file:
+    with open(output_file_path, 'a', newline='') as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        writer.writerow(atbl_rec['fields'])
+        writer.writerow(row)
 
 
 def write_csv_header(output_file_path, fieldnames):
@@ -48,24 +49,26 @@ def export_metadata(kwvars):
     '''
     manages the rpocess of exporting metadata form Airtable
     '''
-    logger.info("preparing to export metadata from Airtbale to CSV...")
-    atbl_base = connect_one_base('Assets')
+    logger.info("preparing to export metadata from Airtable to CSV...")
+    atbl_conf = airtable.config()
+    atbl_base = airtable.connect_one_base('Assets')
     atbl_tbl = atbl_base['Digital Assets']
     atbl_api = airtable.connect_api()
     atbl_tbl_md = atbl_api.table(atbl_conf['bases']['Assets']['base_id'], 'Digital Assets')
     atbl_tbl_schema = atbl_tbl.schema()
     fieldnames = [field.name for field in atbl_tbl_md.schema().fields]
     output_file_path = kwvars['output']
-    make_output_file(output_file_path)
+    init_output_file(output_file_path)
     write_csv_header(output_file_path, fieldnames)
+    input("yo")
     if kwvars['excel_input']:
         daids = excel.parse_sheet_for_daids(kwvars['excel_input'])
         for digital_asset_id in daids:
             atbl_rec = airtable.find(daid, 'Digital Asset ID', atbl_tbl, True)
-            write_csv_row(atbl_rec['fields'], output_file_path)
+            write_csv_row(atbl_rec['fields'], fieldnames, output_file_path)
     else:
         for atbl_rec in atbl_tbl.all(view=kwvars['view']):
-            write_csv_row(atbl_rec['fields'], output_file_path)
+            write_csv_row(atbl_rec['fields'], fieldnames, output_file_path)
 
 
 

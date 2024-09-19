@@ -50,7 +50,6 @@ def get_workbook_type(workbook):
         return 'Vendor-AssetsMetadata'
     elif bwf_sheetnames == workbook_sheetnames:
         return 'Unit-BWF'
-    else:
     return None
 
 
@@ -74,7 +73,7 @@ def load_all_worksheets(filepath):
                 continue
         except KeyError:
             pass
-    sheet = workbook[sheet_name]
+        sheet = workbook[sheet_name]
         start_row = conf[workbook_type][sheet_name]["first_row_with_data"]
         rows_dict = {}
         for row_index, row in enumerate(sheet.iter_rows(values_only=True, min_row=start_row), start=start_row):
@@ -128,7 +127,7 @@ def parse_sheet_for_daids(excel_file_path):
     returns list of daids
     '''
     logger.info("parsing Excel sheet for Digital Asset IDs...")
-    workbook = openpyxl.load_workbook(filepath)
+    workbook = openpyxl.load_workbook(excel_file_path)
     workbook_type = get_workbook_type(workbook)
     if workbook_type == 'Unit-AssetsMetadata':
         sheet_name = 'Assets-Unit-Provided'
