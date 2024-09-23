@@ -178,7 +178,7 @@ def validate_media(kwvars):
         else:
             passes.append({"daid": file.name})
     if fails:
-        logger.warning(f"{len(fails)} files did not pass validation")
+        logger.warning(f"{len(fails)} of {len(files_to_validate)} files failed validation")
         while True:
             user_input = input("Do you want to review the failed files? y/n ").lower()
             if user_input not in ['y', 'n']:
