@@ -28,19 +28,27 @@ def attach_equipment_to_aal(args):
     except Exception:
         print("there was a problem with that Auto ID")
         print("please ensure it's just a 4-digit integer")
-    atbl_conf = airtable.config()
-    atbl_tbl_aal = airtable.connect_one_table("Physical Asset Action Log", atbl_conf)
-    atbl_tbl_eqp = airtable.connect_one_table("ALL SI AV EQUIPMENT", atbl_conf)
-    atbl_rec_aal = airtable.find(aal_auto_id, "Auto ID", atbl_tbl_aal, True)
+    atbl_base = airtable.connect_one_base("Assets")
+    atbl_tbl_aal = atbl_base["Physical Asset Action Log"]
+    atbl_tbl_eqp = atbl_base["ALL SI AV EQUIPMENT"]
     while True:
+        atbl_rec_aal = airtable.find(aal_auto_id, "Auto ID #", atbl_tbl_aal, True)
         print("Please Enter the Barcode below")
         print("Or type 'exit' to close")
         barcode = scan_barcode()
         if barcode.lower() in ['exit']:
             return
         atbl_rec_eqp = airtable.find(barcode, "Equip. Barcode", atbl_tbl_eqp, True)
-        atbl_rec_aal['fields']['Equipment Used - Asset Action'] = [atbl_rec_eqp['id']]
-        atbl_rec_aal.save()
+        if not atbl_rec_eqp:
+            print(f"unable to find equipment with barcode {barcode}")
+            print("please try again")
+            continue
+        try:
+            eqp_list = atbl_rec_aal['fields']['Equipment Used - Asset Action']
+            eqp_list.append(atbl_rec_eqp['id'])
+        except KeyError:
+            eqp_list = [atbl_rec_eqp['id']]
+        atbl_tbl_aal.update(atbl_rec_aal['id'], {"Equipment Used - Asset Action": eqp_list})
 
 
 def init():
