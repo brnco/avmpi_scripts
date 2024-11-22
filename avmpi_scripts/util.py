@@ -14,10 +14,15 @@ def run_command(cmd, return_output=False):
     '''
     logger.info(f"running command: {cmd}")
     try:
-        output = subprocess.run(cmd, shell=True, capture_output=True)
+        if isinstance(cmd, list):
+            shell = False
+        elif isinstance(cmd, str):
+            shell = True
+        output = subprocess.run(cmd, shell=shell, capture_output=True)
         if not output.returncode == 0:
             logger.error(f"return code: {output.returncode}")
-            logger.error(f"error description: {output.stderr.decode('utf-8')}")
+            logger.error(f"stderr: {output.stderr.decode('utf-8')}")
+            logger.error(f"stdout: {output.stdout.decode('utf-8')}")
             raise RuntimeError("there was a problem running that command")
         else:
             if return_output:

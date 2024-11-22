@@ -21,62 +21,6 @@ def get_field_map(obj_type):
     return field_mapping[obj_type]
 
 
-class CodingHistory(object):
-    '''
-    this BWF field is complicated so it gets its own object
-    '''
-
-    @classmethod
-    def from_atbl(cls, digital_asset_id):
-        '''
-        creates coding history from Digital Asset Airtable record
-        '''
-        instance = cls()
-        setattr(instance, 'algorithm', 'A=ANALOG')
-        field_map = get_field_map('History')
-        atbl_base = airtable.connect_one_base("Assets")
-        atbl_tbl = atbl_base['Digital Assets']
-        atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
-        txtfs_fields = ['txtfs_equipment_model', 'txtfs_equipment_sn',
-                        'txtfs_speed_value', 'txtfs_speed_type']
-        if not atbl_rec_digital_asset:
-            raise RuntimeError(f"no records found for Digital Asset ID {digital_asset_id}")
-        for field, mapping in field_map.items():
-            try:
-                foo = mapping['atbl']
-            except (KeyError, TypeError):
-                continue
-            try:
-                value = atbl_rec_digital_asset['fields'][mapping['atbl']['name']]
-            except KeyError:
-                # means this field wasn't included in response
-                # i.e. this field isn't filled in
-                continue
-            except TypeError:
-                # means this is a txtfs field
-                value = atbl_rec_digital_asset['fields'][mapping['atbl']]
-            if isinstance(value, list):
-                if len(value) == 1:
-                    value = value[0]
-                else:
-                    value = ','.join(value)
-            try:
-                value = mapping['atbl']['prefix'] + value
-            except (KeyError, TypeError):
-                pass
-            setattr(instance, field, value)
-        _codinghistory = []
-        for field in field_map.keys():
-            try:
-                element = getattr(instance, field)
-                codinghistory.append(element)
-            except Exception:
-                pass
-        codinghistory = '; '.join(_codinghistory)
-        setattr(instance, "CodingHistory", codinghistory)
-        return instance
-
-
 class BWFDescription(object):
     '''
     BWF Description field is a mess so it gets its own class
@@ -203,7 +147,7 @@ class BroadcastWaveFile(object):
         '''
         field_map = get_field_map('BroadcastWaveFile')
         instance = cls()
-        post_process_fields = ['Originator', 'originatorReference', 'ISRF', 'codingHistory']
+        post_process_fields = ['Originator', 'originatorReference', 'ISRF']
         atbl_base = airtable.connect_one_base("Assets")
         atbl_tbl = atbl_base['Digital Assets']
         atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
@@ -223,21 +167,13 @@ class BroadcastWaveFile(object):
             try:
                 value = atbl_rec_digital_asset['fields'][mapping['atbl']]
             except KeyError:
-                if field == 'History':
-                    try:
-                        foo = atbl_rec_digital_asset['fields']['A-D Transfers (BWF)']
-                        bwf_codhist = CodingHistory().from_atbl(digital_asset_id)
-                        value = getattr(bwf_codhist, "CodingHistory")
-                    except KeyError:
-                        details = ("No Coding History specified in 'Coding History' field and no linked A-D Transfer. "
-                                   "Exiting...")
-                        raise RuntimeError(f"Cannot create Coding History for {digital_asset_id}. {details}")
-                else:
-                    continue
+                continue
             if isinstance(value, list):
                 if len(value) == 1:
                     value = value[0]
             setattr(instance, field, value)
+        setattr(instance, 'OriginationDate', 'TIMESTAMP')
+        setattr(instance, 'OriginationTime', 'TIMESTAMP')
         return instance
 
     def to_bwf_meta_str(self):
