@@ -43,12 +43,16 @@ def attach_equipment_to_aal(args):
             print(f"unable to find equipment with barcode {barcode}")
             print("please try again")
             continue
+        if args.field == 'asset_action':
+            field = 'Equipment Used - Asset Action'
+        elif args.field == 'digitization':
+            field = 'Equipment Used - Digitization'
         try:
-            eqp_list = atbl_rec_aal['fields']['Equipment Used - Asset Action']
+            eqp_list = atbl_rec_aal['fields'][field]
             eqp_list.append(atbl_rec_eqp['id'])
         except KeyError:
             eqp_list = [atbl_rec_eqp['id']]
-        atbl_tbl_aal.update(atbl_rec_aal['id'], {"Equipment Used - Asset Action": eqp_list})
+        atbl_tbl_aal.update(atbl_rec_aal['id'], {field: eqp_list})
 
 
 def init():
@@ -69,6 +73,11 @@ def init():
                         help="the 4-digit autonumber for the Asset "
                         "Action Log that you'd like to attach the "
                         "equipment to")
+    parser.add_argument('-f', '--field', dest='field',
+                        choices=['asset_action', 'digitization'],
+                        help="which field in Asset Action Record to add equipment to\n"
+                        "'asset_action' = Equipment Used - Asset Action\n"
+                        "'digitization' = Equipment Used - Digitization")
     args = parser.parse_args()
     return args
 
