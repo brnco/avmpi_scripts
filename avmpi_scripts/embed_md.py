@@ -21,7 +21,7 @@ def embed_bwf(path, metadata):
 
     metadata here is a list of BWFMetaEdit flags
     '''
-    cmd = "bwfmetaedit " + metadata + " " + str(path)
+    cmd = 'bwfmetaedit ' + metadata + ' "' + str(path) + '"'
     util.run_command(cmd)
 
 
