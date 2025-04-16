@@ -4,6 +4,8 @@
 
 The home of the Smithsonian Library and Archives Audiovisual Media Preservation Initiative's software automations
 
+🚧 this repo is under construction 🚧
+
 # Pre-Install
 
 Before installing, check out [this wiki page](https://github.com/brnco/avmpi_scripts/wiki/Pre%E2%80%90Install-Setup) for important pre-install setup notes.
