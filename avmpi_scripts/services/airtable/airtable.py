@@ -609,6 +609,9 @@ def find(query, field, table, single_result=False):
     logger.info(f"searching Airtable table: {table}")
     logger.info(f"for value: {query}")
     logger.info(f"in field: {field}")
+    logger.info(type(table))
+    logger.info(table.__dict__)
+    input("yo")
     try:
         results = table.all(formula=match({field: query}))
         if results:

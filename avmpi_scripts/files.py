@@ -150,6 +150,7 @@ class BroadcastWaveFile(object):
         post_process_fields = ['Originator', 'originatorReference', 'ISRF']
         atbl_base = airtable.connect_one_base("Assets")
         atbl_tbl = atbl_base['Digital Assets']
+        results = atbl_tbl.first()
         atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
         if not atbl_rec_digital_asset:
             raise RuntimeError(f"no records found for Digital Asset ID {digital_asset_id}")

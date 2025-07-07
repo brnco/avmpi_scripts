@@ -19,7 +19,7 @@
                 "column": "C",
                 "required": true
             },
-            "atbl": "Metadata Submitted By"
+            "atbl": "Metadata Collected By"
         },
         "media_type": {
             "xlsx": {
@@ -67,7 +67,7 @@
         },
         "Collection": {
             "xlsx": {
-                "column": "H",
+                "column": "F",
                 "required": true
             },
             "atbl": {
@@ -79,14 +79,14 @@
         },
         "title": {
             "xlsx": {
-                "column": "I",
+                "column": "G",
                 "required": true
             },
             "atbl": "Title - Free text"
         },
         "size_value": {
             "xlsx": {
-                "column": "J",
+                "column": "H",
                 "required": true
             },
             "atbl": {
@@ -96,7 +96,7 @@
         },
         "size_type": {
             "xlsx": {
-                "column": "K",
+                "column": "I",
                 "required": true
             },
             "atbl": {
@@ -105,118 +105,114 @@
             }
         },
         "secondary_asset_id": {
-            "xlsx": "L",
-            "atbl": "Secondary Asset ID"
+            "xlsx": "K",
+            "atbl": "Additional Asset ID"
         },
         "part": {
-            "xlsx": "M",
+            "xlsx": "L",
             "atbl": "Part"
         },
         "asset_barcode": {
-            "xlsx": "N",
+            "xlsx": "M",
             "atbl": {
                 "name": "Asset Barcode",
                 "type": "barcode"
             }
         },
         "original_container": {
-            "xlsx": "O",
+            "xlsx": "N",
             "atbl": "Original Container"
         },
         "accessories": {
-            "xlsx": "P",
+            "xlsx": "O",
             "atbl": "Accessories"
         },
         "creator": {
-            "xlsx": "Q",
+            "xlsx": "P",
             "atbl": "Creator"
         },
         "date_value": {
-            "xlsx": "R",
+            "xlsx": "Q",
             "atbl": {
-                "name": "Date",
+                "name": "Asset Date",
                 "type": "date"
             }
         },
         "date_notes": {
-            "xlsx": "S",
-            "atbl": "Date Notes"
+            "xlsx": "R",
+            "atbl": "Asset Date Notes"
         },
         "brand_stock": {
-            "xlsx": "T",
+            "xlsx": "S",
             "atbl": {
                 "name": "Brand-stock",
                 "type": "multipleSelect"
             }
         },
         "base_substrate": {
-            "xlsx": "U",
+            "xlsx": "T",
             "atbl": {
                 "name": "Base-Substrate Layer",
-                "type": "singleSelect"
+                "type": "multipleSelect"
             }
         },
         "color": {
-            "xlsx": "V",
+            "xlsx": "U",
             "atbl": {
                 "name": "Color",
                 "type": "multipleSelect"
             }
         },
         "sound": {
-            "xlsx": "W",
+            "xlsx": "V",
             "atbl": {
-                "name": "Sound",
+                "name": "Soundtrack",
                 "type": "multipleSelect"
             }
         },
         "speed": {
-            "xlsx": "X",
+            "xlsx": "W",
             "atbl": {
                 "name": "Speed",
                 "type": "number"
             }
         },
         "speed_type": {
-            "xlsx": "Y",
+            "xlsx": "X",
             "atbl": {
                 "name": "Speed Type",
-                "type": "singleSelect"
+                "type": "multipleSelect"
             }
         },
         "duration": {
-            "xlsx": "Z",
+            "xlsx": "Y",
             "atbl": {
-                "name": "Duration",
+                "name": "Physical Asset Duration",
                 "type": "number"
             }
         },
         "content_description": {
-            "xlsx": "AA",
+            "xlsx": "Z",
             "atbl": "Content Description"
         },
         "item_rights_note": {
-            "xlsx": "AB",
+            "xlsx": "AA",
             "atbl": "Item Rights Note"
         },
         "generation_notes": {
-            "xlsx": "AC",
+            "xlsx": "AB",
             "atbl": "Generation Notes"
         },
         "condition_notes": {
-            "xlsx": "AD",
+            "xlsx": "AC",
             "atbl": "Condition Inspection Notes"
         },
-        "documentation": {
-            "xlsx": "AE",
-            "atbl": "Documentation"
-        },
         "prior_conservation": {
-            "xlsx": "AF",
+            "xlsx": "AE",
             "atbl": "Prior Conservation Activities"
         },
         "regional_encoding": {
-            "xlsx": "AG",
+            "xlsx": "AF",
             "atbl": {
                 "name": "Regional Encoding",
                 "type": "singleSelect"
@@ -225,7 +221,7 @@
         "noise_reduction_encoding": {
             "xlsx": "AH",
             "atbl": {
-                "name": "Noise Reduction Encoding",
+                "name": "Noise Reduction Systems",
                 "type": "singleSelect"
             }
         },
