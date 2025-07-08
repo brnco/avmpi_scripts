@@ -12,7 +12,7 @@ import services.airtable.airtable as airtable
 import services.excel.excel as excel
 
 
-def get_record_type_from_sheet(sheet_name):
+def get_record_type_from_sheet(sheet_name: str) -> str:
     '''
     with given sheet name
     return name of class of related Airtable record
@@ -31,7 +31,7 @@ def get_record_type_from_sheet(sheet_name):
     return record_type
     
 
-def process_rows(rows, record_type, kwvars):
+def process_rows(rows: dict, record_type: str, kwvars: dict):
     '''
     processes row(s) in sheet
     '''
@@ -65,7 +65,7 @@ def process_rows(rows, record_type, kwvars):
             logger.info("row processed successfully")
 
 
-def excel_to_airtable(kwvars):
+def excel_to_airtable(kwvars: dict):
     '''
     manages the upload of an Excel sheet to Airtable
     '''
@@ -91,10 +91,9 @@ def excel_to_airtable(kwvars):
             if not record_type:
                 continue
             process_rows(rows, record_type, kwvars)
-        
 
 
-def parse_args(args):
+def parse_args(args: argparse.Namespace):
     '''
     returns dictionary of arguments parsed for our use
     '''
@@ -115,7 +114,7 @@ def parse_args(args):
     return kwvars
 
 
-def init_args():
+def init_args() -> argparse.Namespace:
     '''
     initializes the arguments from the command line
     '''
@@ -152,6 +151,7 @@ def main():
     logger = make_log.init_log(loglevel_print=kwvars['loglevel_print'])
     excel_to_airtable(kwvars)
     logger.info("excel2airtable has completed successfully")
+
 
 if __name__ == "__main__":
     main()
