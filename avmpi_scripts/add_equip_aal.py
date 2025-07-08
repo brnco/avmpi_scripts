@@ -7,7 +7,7 @@ import argparse
 import services.airtable.airtable as airtable
 
 
-def scan_barcode():
+def scan_barcode() -> str:
     '''
     returns the barcode from user input
     '''
@@ -15,7 +15,7 @@ def scan_barcode():
     return barcode
 
 
-def attach_equipment_to_aal(args):
+def attach_equipment_to_aal(args: argparse.Namespace):
     '''
     manages the process
     '''
@@ -55,7 +55,7 @@ def attach_equipment_to_aal(args):
         atbl_tbl_aal.update(atbl_rec_aal['id'], {field: eqp_list})
 
 
-def init():
+def init() -> argparse.Namespace:
     '''
     get the CLI arguments etc
     '''
@@ -89,8 +89,6 @@ def main():
     print("starting...")
     args = init()
     attach_equipment_to_aal(args)
-    
-    
 
 
 if __name__ == "__main__":
