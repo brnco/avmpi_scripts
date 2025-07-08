@@ -10,7 +10,7 @@ import services.airtable.airtable as airtable
 logger = logging.getLogger('main_logger')
 
 
-def get_field_map(obj_type):
+def get_field_map(obj_type: str) -> dict:
     '''
     returns dictionary of field mappings for Excel <-> BWF Metadata
     '''
@@ -27,7 +27,7 @@ class BWFDescription(object):
     '''
 
     @classmethod
-    def from_atbl(cls, digital_asset_id):
+    def from_atbl(cls, digital_asset_id: str):
         '''
         creates BWF Description from Digital Asset Airtable record
         '''
@@ -113,7 +113,7 @@ class BroadcastWaveFile(object):
                 pass
 
     @classmethod
-    def from_xlsx(cls, row):
+    def from_xlsx(cls, row: dict):
         '''
         creates BWF object from a row in Excel metadata template
         '''
@@ -141,7 +141,7 @@ class BroadcastWaveFile(object):
         return instance
 
     @classmethod
-    def from_atbl(cls, digital_asset_id):
+    def from_atbl(cls, digital_asset_id: str):
         '''
         gets BWF metadata from Digital Asset Record
         '''
@@ -177,7 +177,7 @@ class BroadcastWaveFile(object):
         setattr(instance, 'OriginationTime', 'TIMESTAMP')
         return instance
 
-    def to_bwf_meta_str(self):
+    def to_bwf_meta_str(self) -> str:
         '''
         converts attributes into string that can be read by BWF MetaEdit
         '''
@@ -187,7 +187,7 @@ class BroadcastWaveFile(object):
             bwf_meta_str += chunk_str
         return bwf_meta_str.strip()
 
-    def to_bwf_meta_list(self):
+    def to_bwf_meta_list(self) -> list:
         '''
         convert attributes into list for subprocess implementaiton of BWF MetaEdit
         '''
