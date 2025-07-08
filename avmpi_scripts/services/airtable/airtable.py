@@ -74,6 +74,8 @@ class AVMPIAirtableRecord:
                 pass
         if attr_name == 'asset_size':
             value = float(value)
+        if attr_name == 'size_type':
+            value = value.title()
         if 'date' in attr_name:
             value = datetime.strptime(value, '%Y-%m-%d')
         if attr_name == 'asset_duration':
@@ -176,7 +178,7 @@ class AVMPIAirtableRecord:
         instance = cls()
         problem_attrs = ['asset_barcode', 'color', 'sound', 'asset_duration', 'asset_size',
                          'secondary_asset_id', 'physical_asset_barcode', 'date_value', 'asset_creation_date',
-                         'brand_stock']
+                         'brand_stock', 'size_type']
         link_field_attrs = ['DigitalAsset', 'PhysicalAsset', 'PhysicalFormat',
                             'LocationPrep', 'LocationDelivery', 'Collection',
                             'Container']

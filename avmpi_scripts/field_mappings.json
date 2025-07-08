@@ -41,30 +41,6 @@
                 "type": "linked_syncd"
             }
         },
-        "LocationPrep": {
-            "xlsx": {
-                "column": "F",
-                "required": true
-            },
-            "atbl": {
-                "name": "Current Location",
-                "type": "linked_syncd",
-                "origin_base_id": "appWtd175HSokQgQP",
-                "origin_table_name": "Locations"
-            }
-        },
-        "LocationDelivery": {
-            "xlsx": {
-                "column": "G",
-                "required": true
-            },
-            "atbl": {
-                "name": "Delivery Location",
-                "type": "linked_syncd",
-                "origin_base_id": "appWtd175HSokQgQP",
-                "origin_table_name": "Locations"
-            }
-        },
         "Collection": {
             "xlsx": {
                 "column": "F",
