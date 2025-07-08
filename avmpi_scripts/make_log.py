@@ -8,7 +8,7 @@ import time
 import sys
 
 
-def init_log(logfile=False, loglevel_print=logging.INFO, conf=None):
+def init_log(logfile: bool = False, loglevel_print: int = logging.INFO):
     '''
     initializes log actions
     '''
