@@ -11,9 +11,9 @@ from pprint import pformat
 import services.airtable.airtable as airtable
 import make_log
 import util
+from typing import Optional
 
-
-def config():
+def config() -> dict:
     '''
     creates/ returns config object for MediaConch/ validation setup
     validate_media_config.json located in same dir as this script
@@ -24,7 +24,7 @@ def config():
     return validation_config
 
 
-def run_mediaconch(media_fullpath, policy_fullpath):
+def run_mediaconch(media_fullpath: pathlib.Path, policy_fullpath: pathlib.Path) -> bool | str:
     '''
     actually calls MediaConch and handles output
 
@@ -50,7 +50,7 @@ def run_mediaconch(media_fullpath, policy_fullpath):
         raise RunetimeError("the script encountered an error trying to validate that file")
 
 
-def get_linked_digital_asset_record(daid, atbl_base):
+def get_linked_digital_asset_record(daid: str, atbl_base: pyairtable.Base):
     '''
     QC Log table links to digital asset table
     we need to pop record_id from Digital Assets record into QC Log, for new records

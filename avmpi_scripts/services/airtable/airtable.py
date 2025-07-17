@@ -8,16 +8,19 @@ import logging
 import requests
 from datetime import timedelta, datetime
 from pprint import pformat
-from pyairtable import Api, Table
+from pyairtable import Api, Base, Table
 from pyairtable import metadata as atbl_mtd
 from pyairtable.orm import Model, fields
 from pyairtable.formulas import match
+from pyairtable.api import types as pyairtable_types
+from typing import Self, Any
 
+RecordDict = pyairtable_types.RecordDict
 
 logger = logging.getLogger('main_logger')
 
 
-def config():
+def config() -> dict:
     '''
     creates/ returns config object for Airtable setup
     airtable_config.json located in same dir as this script
@@ -28,7 +31,7 @@ def config():
     return atbl_config
 
 
-def get_api_key():
+def get_api_key() -> str:
     '''
     returns the airtable API key from the config file
     '''
@@ -36,7 +39,7 @@ def get_api_key():
     return atbl_config['main']['api_key']
 
 
-def get_field_map(obj_type):
+def get_field_map(obj_type: str) -> str:
     '''
     returns dictionary of field mappings for attr <-> Airtable <-> XLSX
     for specified object type, e.g. PhysicalAssetRecord
@@ -56,7 +59,7 @@ class AVMPIAirtableRecord:
     '''
     primary_field = None
 
-    def _fix_problem_attrs(self, attr_name, value):
+    def _fix_problem_attrs(self, attr_name: str, value: str) -> Any:
         '''
         for some of these we need an extra layer of formatting
         '''
@@ -91,7 +94,7 @@ class AVMPIAirtableRecord:
                     value = timedelta(hours=hours, minutes=minutes, seconds=seconds)
         return value
 
-    def _set_link_field(self, attr_name, value):
+    def _set_link_field(self, attr_name: str, value: str) -> list:
         '''
         sets the values for a linked field
         little bit of a hack but it works great
@@ -171,7 +174,7 @@ class AVMPIAirtableRecord:
         return [atbl_rec]
 
     @classmethod
-    def from_xlsx(cls, row, field_map):
+    def from_xlsx(cls, row: dict, field_map: dict) -> Self:
         '''
         creates an Airtable record from a row of an XLSX spreadsheet
         '''
@@ -213,7 +216,7 @@ class AVMPIAirtableRecord:
                 raise RuntimeError("there was a problem parsing the above value to an Airtable field")
         return instance
 
-    def _get_primary_key_info(self):
+    def _get_primary_key_info(self) -> tuple[str, str]:
         '''
         for send()
         gets primary key name and value
@@ -233,7 +236,8 @@ class AVMPIAirtableRecord:
             self_primary_field_value = self.primary_field
         return primary_field_name, self_primary_field_value
 
-    def _search_on_primary_field(self, primary_field_name, self_primary_field_value):
+    def _search_on_primary_field(self, primary_field_name: str,
+                                 self_primary_field_value: str) -> RecordDict:
         '''
         searches for self_primary_field_value in primary_field_name
         '''
@@ -253,7 +257,7 @@ class AVMPIAirtableRecord:
             return None
         return atbl_rec_remote
 
-    def _fill_remote_rec_from_local(self, atbl_rec_remote):
+    def _fill_remote_rec_from_local(self, atbl_rec_remote: RecordDict) -> RecordDict:
         '''
         ugh we can't just assign a record id to an unsaved record
         and have that overwrite a remote record
@@ -268,9 +272,9 @@ class AVMPIAirtableRecord:
                 continue
         return atbl_rec_remote
 
-    def _save_rec(self, atbl_rec):
+    def _save_rec(self, atbl_rec: Self) -> Self:
         '''
-        actually save the damn record
+        actually save the dang record
         '''
         try:
             atbl_rec.save()
@@ -283,7 +287,7 @@ class AVMPIAirtableRecord:
             logger.exception(exc, stack_info=True)
             raise RuntimeError("there was a problem saving that record")
 
-    def send(self):
+    def send(self) -> Self:
         '''
         primary means of updating / inserting
 
@@ -346,7 +350,7 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
         def api_key():
             return get_api_key()
 
-    def from_xlsx(self, row):
+    def from_xlsx(self, row: dict) -> dict:
         '''
         creates an Airtable record from a row in an Excel file
         using field mapping
@@ -385,7 +389,7 @@ class DigitalAssetRecord(Model, AVMPIAirtableRecord):
         def api_key():
             return get_api_key()
 
-    def from_xlsx(self, row):
+    def from_xlsx(self, row: dict) -> dict:
         '''
         creates an Airtable record from a row in an Excel file
         using field mapping
@@ -422,16 +426,16 @@ class PhysicalAssetActionRecord(Model, AVMPIAirtableRecord):
         def api_key():
             return get_api_key()
 
-    def from_xlsx(self, row):
+    def from_xlsx(self, row: dict) -> dict:
         '''
         creates an Airtable record from a row in an Excel file
         using field mapping
         '''
         return super().from_xlsx(row, self.field_map)
 
-    def send(self):
+    def send(self) -> Self:
         '''
-        because the primary key field for thsi table is a formula
+        because the primary key field for this table is a formula
         we can't search on it
         so, we make our own custom search here
         '''
@@ -584,7 +588,7 @@ def set_link_fields():
 set_link_fields()
 
 
-def connect_one_base(base_name):
+def connect_one_base(base_name: str) -> Base:
     '''
     returns a connection to every table in a base
     '''
@@ -599,7 +603,8 @@ def connect_one_base(base_name):
     return atbl_base
 
 
-def find(query, field, table, single_result=False):
+def find(query: Any, field: str, table: Table, 
+         single_result: bool = False) -> RecordDict | list:
     '''
     queries field in table
     if single result is desired:
@@ -631,7 +636,7 @@ def find(query, field, table, single_result=False):
         raise RuntimeError("there was an error searching Airtable")
 
 
-def parse_asset_actions(atbl_rec):
+def parse_asset_actions(atbl_rec: PhysicalAssetActionRecord) -> list:
     '''
     uh each action in the log gets its own record
     so the initial Asset Action Record might need to be several records
