@@ -40,12 +40,13 @@ class BWFDescription(object):
             raise RuntimeError(f"no records found for Digital Asset ID {digital_asset_id}")
         for field, mapping in field_map.items():
             try:
-                foo = mapping['atbl']
+                if 'atbl' in mapping:
+                    pass
             except (KeyError, TypeError):
                 continue
             try:
                 value = atbl_rec_digital_asset['fields'][mapping['atbl']['name']]
-            except:
+            except Exception:
                 raise RuntimeError(f"returned Digital Asset Record missing field {field}")
             try:
                 value = mapping['atbl']['prefix'] + value
@@ -67,7 +68,6 @@ class BWFDescription(object):
 class BroadcastWaveFile(object):
     '''
     class for BWF WAVE
-
     BWF fields - required:
     Description
     Originator
@@ -104,7 +104,7 @@ class BroadcastWaveFile(object):
         for attr_name in required_fields:
             try:
                 setattr(self, attr_name, kwargs[attr_name])
-            except Exception as exc:
+            except Exception:
                 pass
         for attr_name in optional_fields:
             try:
@@ -147,16 +147,17 @@ class BroadcastWaveFile(object):
         '''
         field_map = get_field_map('BroadcastWaveFile')
         instance = cls()
-        post_process_fields = ['Originator', 'originatorReference', 'ISRF']
+        # post_process_fields = ['Originator', 'originatorReference', 'ISRF']
         atbl_base = airtable.connect_one_base("Assets")
         atbl_tbl = atbl_base['Digital Assets']
-        results = atbl_tbl.first()
+        # results = atbl_tbl.first()
         atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
         if not atbl_rec_digital_asset:
             raise RuntimeError(f"no records found for Digital Asset ID {digital_asset_id}")
         for field, mapping in field_map.items():
             try:
-                foo = mapping['atbl']
+                if mapping['atbl']:
+                    pass
             except KeyError: 
                 if field == 'Description':
                     bwf_description = BWFDescription().from_atbl(digital_asset_id)
