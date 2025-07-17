@@ -1,7 +1,7 @@
 [project]
-name = "avmpi-scripts"
+name = "avmpi_scripts"
 version = "0.1.0"
-description = "Add your description here"
+description = "the home of the Smithsonian Library and Archives Audiovisual Media Preservation Initiative's software automations"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
