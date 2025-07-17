@@ -2,9 +2,6 @@
 logging functions for AVMPI
 '''
 import logging
-import re
-import pathlib
-import time
 import sys
 
 
@@ -49,7 +46,7 @@ def close_handlers():
     '''
     for use in interactive sessions and testing
     '''
-    logger.logging.getLogger(__name__)
+    logger = logging.getLogger(__name__)
     handlers = logger.handlers
     for handler in handlers:
         logger.removeHandler(handler)
