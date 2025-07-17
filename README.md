@@ -20,7 +20,7 @@ For the longest time, python was a great language with a horrible distribution e
 
 ## Sync uv
 
-We need to ensure that the configuration for the project is sync'd with your local machine and all the dependencies are isntalled.
+We need to ensure that the configuration for the project is sync'd with your local machine and all the dependencies are installed.
 
 To do this:
 
