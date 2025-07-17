@@ -1,17 +1,14 @@
 '''
 takes metadata form Airtable and pops it into WAVE files
 '''
-import configparser
 import argparse
 import os
 import pathlib
 import logging
-import subprocess
 from pprint import pformat
 import make_log
 import util
 import files
-import services.airtable.airtable as airtable
 import services.excel.excel as excel
 
 
