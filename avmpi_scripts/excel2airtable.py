@@ -1,9 +1,7 @@
 '''
 uploads metadata in Excel spreadsheets to Airtable
 '''
-import configparser
 import argparse
-import os
 import pathlib
 import logging
 from pprint import pformat
