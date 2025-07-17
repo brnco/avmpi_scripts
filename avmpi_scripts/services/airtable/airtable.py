@@ -9,7 +9,6 @@ import requests
 from datetime import timedelta, datetime
 from pprint import pformat
 from pyairtable import Api, Base, Table
-from pyairtable import metadata as atbl_mtd
 from pyairtable.orm import Model, fields
 from pyairtable.formulas import match
 from pyairtable.api import types as pyairtable_types
@@ -222,7 +221,8 @@ class AVMPIAirtableRecord:
         gets primary key name and value
         '''
         atbl_tbl = self.get_table()
-        atbl_tbl_schema = atbl_mtd.get_table_schema(atbl_tbl)
+        atbl_tbl_schema = base.table(atbl_tbl.name).schema
+        # atbl_tbl_schema = atbl_mtd.get_table_schema(atbl_tbl)
         primary_field_id = atbl_tbl_schema['primaryFieldId']
         for field in atbl_tbl_schema['fields']:
             if field['id'] == primary_field_id:

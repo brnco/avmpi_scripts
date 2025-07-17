@@ -11,7 +11,6 @@ import services.airtable.airtable as airtable
 from pyairtable import Base
 import make_log
 import util
-from typing import Tuple
 
 def config() -> dict:
     '''
@@ -123,7 +122,7 @@ def get_files_to_validate(folder_path: pathlib.Path) -> list:
     return files_to_check
 
 
-def review_failed_files(failed_files: list) -> Tuple(list, list):
+def review_failed_files(failed_files: list) -> tuple[list, list]:
     '''
     UX for reviewing the files that failed validation
     '''
