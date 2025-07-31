@@ -1,31 +1,28 @@
 '''
 takes metadata form Airtable and pops it into WAVE files
 '''
-import configparser
 import argparse
 import os
 import pathlib
 import logging
-import subprocess
 from pprint import pformat
 import make_log
 import util
 import files
-import services.airtable.airtable as airtable
 import services.excel.excel as excel
 
 
-def embed_bwf(path, metadata):
+def embed_bwf(path: pathlib.Path, metadata: str):
     '''
     actually embeds the metadata to file at path
 
     metadata here is a list of BWFMetaEdit flags
     '''
-    cmd = "bwfmetaedit " + metadata + " " + str(path)
+    cmd = 'bwfmetaedit ' + metadata + ' "' + str(path) + '"'
     util.run_command(cmd)
 
 
-def process_rows(rows, kwvars):
+def process_rows(rows: dict, kwvars: dict):
     '''
     processes the rows for eventual embedding
     '''
@@ -50,7 +47,7 @@ def process_rows(rows, kwvars):
         embed_bwf(str(wav_path), bwf.to_bwf_meta_list())
 
 
-def load_bwf_md_from_excel(kwvars):
+def load_bwf_md_from_excel(kwvars: dict) -> dict:
     '''
     loads bwf metadata from excel sheet
     '''
@@ -66,7 +63,7 @@ def load_bwf_md_from_excel(kwvars):
     return rows
 
 
-def embed_metadata(kwvars):
+def embed_metadata(kwvars: dict):
     '''
     manages the process of embedding metadata
     '''
@@ -75,7 +72,9 @@ def embed_metadata(kwvars):
         rows = load_bwf_md_from_excel(kwvars)
         process_rows(rows, kwvars)
     elif kwvars['daid']:
+        logger.info("here1")
         bwf = files.BroadcastWaveFile().from_atbl(kwvars['daid'])
+        logger.info("here2")
         if kwvars['dadir']:
             wav_path = pathlib.Path(kwvars['dadir'])
         else:
@@ -86,7 +85,7 @@ def embed_metadata(kwvars):
         embed_bwf(wav_fullpath, bwf.to_bwf_meta_str())
 
 
-def parse_args(args):
+def parse_args(args: argparse.Namespace) -> dict:
     '''
     returns dictionary of arguments parsed for our use
     '''
@@ -111,7 +110,7 @@ def parse_args(args):
     return kwvars
 
 
-def init_args():
+def init_args() -> argparse.Namespace:
     '''
     initializes the arguments from the command line
     '''

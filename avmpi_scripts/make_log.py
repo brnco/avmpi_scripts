@@ -2,13 +2,10 @@
 logging functions for AVMPI
 '''
 import logging
-import re
-import pathlib
-import time
 import sys
 
 
-def init_log(logfile=False, loglevel_print=logging.INFO, conf=None):
+def init_log(logfile: bool = False, loglevel_print: int = logging.INFO):
     '''
     initializes log actions
     '''
@@ -49,7 +46,7 @@ def close_handlers():
     '''
     for use in interactive sessions and testing
     '''
-    logger.logging.getLogger(__name__)
+    logger = logging.getLogger(__name__)
     handlers = logger.handlers
     for handler in handlers:
         logger.removeHandler(handler)

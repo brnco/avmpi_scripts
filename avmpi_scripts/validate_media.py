@@ -5,15 +5,14 @@ import os
 import json
 import logging
 import pathlib
-import subprocess
 import argparse
 from pprint import pformat
 import services.airtable.airtable as airtable
+from pyairtable import Base
 import make_log
 import util
 
-
-def config():
+def config() -> dict:
     '''
     creates/ returns config object for MediaConch/ validation setup
     validate_media_config.json located in same dir as this script
@@ -24,7 +23,7 @@ def config():
     return validation_config
 
 
-def run_mediaconch(media_fullpath, policy_fullpath):
+def run_mediaconch(media_fullpath: pathlib.Path, policy_fullpath: pathlib.Path) -> bool | str:
     '''
     actually calls MediaConch and handles output
 
@@ -47,10 +46,10 @@ def run_mediaconch(media_fullpath, policy_fullpath):
         logger.info(f"file {media_fullpath.name} failed validation")
         return output
     else:
-        raise RunetimeError("the script encountered an error trying to validate that file")
+        raise RuntimeError("the script encountered an error trying to validate that file")
 
 
-def get_linked_digital_asset_record(daid, atbl_base):
+def get_linked_digital_asset_record(daid: str, atbl_base: Base):
     '''
     QC Log table links to digital asset table
     we need to pop record_id from Digital Assets record into QC Log, for new records
@@ -63,7 +62,7 @@ def get_linked_digital_asset_record(daid, atbl_base):
         raise RuntimeError(f"no asset found in {atbl_tbl} with Digital Asset ID {daid}")
 
 
-def send_results_to_airtable(passes, fails):
+def send_results_to_airtable(passes: list, fails: list):
     '''
     actually sends the results of the validation to Airtable QC Log
     '''
@@ -92,7 +91,7 @@ def send_results_to_airtable(passes, fails):
                              "MediaConch": ['Fail'], "QC Issues": failed_file['log']})
 
 
-def detect_policy_for_file(file, conf):
+def detect_policy_for_file(file: str, conf: dict) -> pathlib.Path:
     '''
     determines which policy in config to use for which file
     '''
@@ -106,7 +105,7 @@ def detect_policy_for_file(file, conf):
     return pathlib.Path(file_validation_policy)
 
 
-def get_files_to_validate(folder_path):
+def get_files_to_validate(folder_path: pathlib.Path) -> list:
     '''
     if we're running this in batch mode
     we need to get every file with .mkv or .dv extension
@@ -123,7 +122,7 @@ def get_files_to_validate(folder_path):
     return files_to_check
 
 
-def review_failed_files(failed_files):
+def review_failed_files(failed_files: list) -> tuple[list, list]:
     '''
     UX for reviewing the files that failed validation
     '''
@@ -147,7 +146,7 @@ def review_failed_files(failed_files):
     return rev_passes, rev_fails
 
 
-def validate_media(kwvars):
+def validate_media(kwvars: dict):
     '''
     manages the process of validating media files with MediaConch
     '''
@@ -205,7 +204,7 @@ def validate_media(kwvars):
     send_results_to_airtable(reviewed_passes, reviewed_fails)
 
 
-def parse_args(args):
+def parse_args(args: argparse.Namespace) -> dict:
     '''
     returns dictionary of arguments parsed for our use
     '''
@@ -225,7 +224,7 @@ def parse_args(args):
     return kwvars
 
 
-def init_args():
+def init_args() -> argparse.Namespace:
     '''
     initializes arguments from the command line
     '''

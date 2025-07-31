@@ -3,12 +3,12 @@ utility functions
 '''
 import subprocess
 import logging
-
+from typing import Optional
 
 logger = logging.getLogger('main_logger')
 
 
-def run_command(cmd, return_output=False):
+def run_command(cmd: str | list, return_output: bool = False) -> Optional[str]:
     '''
     wrapper for subprocess.run(), basically
     '''

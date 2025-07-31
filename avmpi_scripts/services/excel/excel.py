@@ -8,11 +8,13 @@ import openpyxl
 from pprint import pformat
 from openpyxl.utils import get_column_letter
 
+Workbook = openpyxl.workbook.workbook.Workbook
+Worksheet = openpyxl.worksheet.worksheet.Worksheet
 
 logger = logging.getLogger('main_logger')
 
 
-def config():
+def config() -> dict:
     '''
     loads config from config file located in same directory
     '''
@@ -23,7 +25,7 @@ def config():
     return excel_conf
 
 
-def load_field_mappings():
+def load_field_mappings() -> dict:
     '''
     loads field mappings from config
     '''
@@ -34,7 +36,7 @@ def load_field_mappings():
     return field_mapping
 
 
-def get_workbook_type(workbook):
+def get_workbook_type(workbook: Workbook) -> str | None:
     '''
     looks through the sheets in teh workbook to determine if this is
     Unit metadata or Vendor metadata
@@ -54,7 +56,7 @@ def get_workbook_type(workbook):
         return None
 
 
-def load_all_worksheets(filepath):
+def load_all_worksheets(filepath: pathlib.Path) -> dict:
     '''
     loads all worksheets from xlsx at filepath into dictionary
     where each key is the worksheet name
@@ -88,7 +90,7 @@ def load_all_worksheets(filepath):
     return sheets_data
 
 
-def validate_row(row, required_columns):
+def validate_row(row: dict, required_columns: list) -> list:
     '''
     validates an individual row against its required columns
     '''
@@ -99,7 +101,7 @@ def validate_row(row, required_columns):
     return missing_values
 
 
-def validate_required_fields(rows, record_type):
+def validate_required_fields(rows: dict, record_type: str) -> list:
     '''
     uses rules in field_mappings.json to validate sheet_dict
     '''
