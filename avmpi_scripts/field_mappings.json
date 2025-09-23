@@ -97,7 +97,7 @@
         },
         "original_container": {
             "xlsx": "N",
-            "atbl": "Original Container"
+            "atbl": "Original Container (Free Text)"
         },
         "accessories": {
             "xlsx": "O",

@@ -1,6 +1,9 @@
 '''
 handler for Airtable calls for AVMPI
 '''
+from pprint import pprint
+import re
+import ast
 import time
 import json
 import pathlib
@@ -74,6 +77,8 @@ class AVMPIAirtableRecord:
                 value = str(int(value))
             except:
                 pass
+        if attr_name == 'base_substrate':
+            value = [value]
         if attr_name == 'asset_size':
             value = float(value)
         if attr_name == 'size_type':
@@ -180,7 +185,7 @@ class AVMPIAirtableRecord:
         instance = cls()
         problem_attrs = ['asset_barcode', 'color', 'sound', 'asset_duration', 'asset_size',
                          'secondary_asset_id', 'physical_asset_barcode', 'date_value', 'asset_creation_date',
-                         'brand_stock', 'size_type']
+                         'brand_stock', 'size_type', 'base_substrate']
         link_field_attrs = ['DigitalAsset', 'PhysicalAsset', 'PhysicalFormat',
                             'LocationPrep', 'LocationDelivery', 'Collection',
                             'Container']
@@ -220,13 +225,14 @@ class AVMPIAirtableRecord:
         for send()
         gets primary key name and value
         '''
-        atbl_tbl = self.get_table()
-        atbl_tbl_schema = base.table(atbl_tbl.name).schema
+        atbl_tbl = self.meta.table
+        # atbl_tbl_schema = Base.table(atbl_tbl.name).schema
+        atbl_tbl_schema = atbl_tbl.schema()
         # atbl_tbl_schema = atbl_mtd.get_table_schema(atbl_tbl)
-        primary_field_id = atbl_tbl_schema['primaryFieldId']
-        for field in atbl_tbl_schema['fields']:
-            if field['id'] == primary_field_id:
-                primary_field_name = field['name']
+        primary_field_id = atbl_tbl_schema.primary_field_id
+        for field in atbl_tbl_schema.fields:
+            if field.id == primary_field_id:
+                primary_field_name = field.name
                 break
         try:
             self_primary_field_value = self._fields[primary_field_name]
@@ -241,7 +247,7 @@ class AVMPIAirtableRecord:
         '''
         searches for self_primary_field_value in primary_field_name
         '''
-        atbl_tbl = self.get_table()
+        atbl_tbl = self.meta.table
         logger.debug(f"searching table {atbl_tbl.name}")
         logger.debug(f"in field {primary_field_name}")
         logger.debug(f"for value {self_primary_field_value}")
@@ -284,7 +290,28 @@ class AVMPIAirtableRecord:
             else:
                 raise RuntimeError("there was a problem saving that record")
         except requests.exceptions.HTTPError as exc:
-            logger.exception(exc, stack_info=True)
+            #logger.exception(exc, stack_info=True)
+            # pprint(exc.response.__dict__)
+            _content = exc.response.__dict__['_content']
+            content = _content.decode('utf-8')
+            error_response = json.loads(content)
+            # pprint(error_response['error'])
+            if error_response['error']['type'] == 'INVALID_MULTIPLE_CHOICE_OPTIONS':
+                try:
+                    match = re.search('""(.*?)""', error_response['error']['message'])
+                    if match:
+                        problem_value = match.group(1)
+                except:
+                    problem_value = error_response['error']['message']
+                logger.warning("A multiple choice option in the local record "
+                                 "does not exist in the destination field. \n"
+                                 "Please review the option below and either: \n"
+                                 "1. modify it in the source record to match an existing value \n"
+                                 "2. add it to the list of values in that Airtable field")
+                logger.warning(f"problem value: {problem_value}")
+                input("Press any key to exit")
+            else:
+                logger.exception(exc, stack_info=True)
             raise RuntimeError("there was a problem saving that record")
 
     def send(self) -> Self:
