@@ -125,70 +125,77 @@
                 "type": "multipleSelect"
             }
         },
-        "base_substrate": {
+        "formulation": {
             "xlsx": "T",
+            "atbl": "Brand-stock Formulation"
+        },
+        "base_substrate": {
+            "xlsx": "U",
             "atbl": {
                 "name": "Base-Substrate Layer",
                 "type": "multipleSelect"
             }
         },
         "color": {
-            "xlsx": "U",
+            "xlsx": "V",
             "atbl": {
                 "name": "Color",
                 "type": "multipleSelect"
             }
         },
         "sound": {
-            "xlsx": "V",
+            "xlsx": "W",
             "atbl": {
                 "name": "Soundtrack",
                 "type": "multipleSelect"
             }
         },
         "speed": {
-            "xlsx": "W",
+            "xlsx": "X",
             "atbl": {
                 "name": "Speed",
                 "type": "number"
             }
         },
         "speed_type": {
-            "xlsx": "X",
+            "xlsx": "Y",
             "atbl": {
                 "name": "Speed Type",
                 "type": "multipleSelect"
             }
         },
         "duration": {
-            "xlsx": "Y",
+            "xlsx": "Z",
             "atbl": {
                 "name": "Physical Asset Duration",
-                "type": "number"
+                "type": "duration"
             }
         },
         "content_description": {
-            "xlsx": "Z",
+            "xlsx": "AA",
             "atbl": "Content Description"
         },
         "item_rights_note": {
-            "xlsx": "AA",
+            "xlsx": "AB",
             "atbl": "Item Rights Note"
         },
-        "generation_notes": {
-            "xlsx": "AB",
-            "atbl": "Generation Notes"
+        "Generation": {
+            "xlsx": "AC",
+            "atbl": {
+                "name": "Generation",
+                "type": "linked_syncd"
+            }
         },
         "condition_notes": {
-            "xlsx": "AC",
+            "xlsx": "AD",
             "atbl": "Condition Inspection Notes"
         },
         "prior_conservation": {
-            "xlsx": "AE",
+            "xlsx": "AF",
             "atbl": "Prior Conservation Activities"
         },
         "regional_encoding": {
-            "xlsx": "AF",
+            "xlsx": "AG",
             "atbl": {
                 "name": "Regional Encoding",
                 "type": "singleSelect"

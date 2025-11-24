@@ -77,14 +77,26 @@ class AVMPIAirtableRecord:
                 value = str(int(value))
             except:
                 pass
+        if attr_name == 'size_value':
+            if isinstance(value, (int, float)):
+                pass
+            else:
+                num_str = ''.join(re.findall(r'\d+|\.', value))
+                if "." in num_str:
+                    value = float(num_str)
+                else:
+                    value = int(num_str)
         if attr_name == 'base_substrate':
             value = [value]
         if attr_name == 'asset_size':
             value = float(value)
         if attr_name == 'size_type':
             value = value.title()
-        if 'date' in attr_name:
-            value = datetime.strptime(value, '%Y-%m-%d')
+        if attr_name in ('date_value', 'asset_creation_date'):
+            try:
+                value = datetime.strptime(value, '%Y-%m-%d')
+            except ValueError:
+                value = None
         if attr_name == 'asset_duration':
             if ':' in value:
                 time_components = value.split(':')
@@ -131,24 +143,32 @@ class AVMPIAirtableRecord:
             table_name = 'Containers'
             primary_key_name = 'Container Name'
             the_class = ContainerRecord()
-        if isinstance(self, PhysicalAssetRecord) and table_name == 'Digital Assets':
+        elif 'Generation' in attr_name:
+            table_name = 'Generations'
+            primary_key_name = 'Term'
+            the_class = GenerationRecord()
+        if isinstance(self, PhysicalAssetRecord) and table_name in ['Digital Assets', 'Generations']:
             atbl_recs = []
             if ',' in value:
-                digital_assets = value.split(',')
+                values = value.split(',')
             elif ';' in value:
-                digital_assets = value.split(';')
+                values = value.split(';')
             else:
-                digital_assets = [value.strip()]
-            digital_assets = [da.strip() for da in digital_assets]
-            for digital_asset in digital_assets:
+                values = [value.strip()]
+            values = [item.strip() for item in values]
+            for link_rec_term in values:
                 atbl_tbl = atbl_api.table(base_id, table_name)
-                logger.debug(f"searching for {digital_asset} in field {primary_key_name} in table {table_name}")
-                result = atbl_tbl.all(formula=match({primary_key_name: digital_asset}))
+                logger.debug(f"searching for {link_rec_term} in field {primary_key_name} in table {table_name}")
+                result = atbl_tbl.all(formula=match({primary_key_name: link_rec_term}))
                 if not result:
                     logger.warning(f"while parsing linked field, no record was in linked table for:")
-                    logger.warning(f"\ndigital_asset: {digital_asset}\nprimary_key_name: {primary_key_name}\ntable: {table_name}")
+                    logger.warning(f"\nvalue: {link_rec_term}\nprimary_key_name: {primary_key_name}\ntable: {table_name}")
+                    if table_name == 'Generations':
+                        logger.warning("Please add that value to the linked/ syncd table, "\
+                                "or edit that value in the original spreadsheet to match existing values, and try again")
+                        exit()
                     logger.warning("creating bare record to link to")
-                    result = atbl_tbl.create({primary_key_name: digital_asset})
+                    result = atbl_tbl.create({primary_key_name: link_rec_term})
                     result = [result]
                     logger.debug(f"result: {result[0]}")
                 atbl_rec = the_class.from_id(result[0]['id'])
@@ -185,10 +205,10 @@ class AVMPIAirtableRecord:
         instance = cls()
         problem_attrs = ['asset_barcode', 'color', 'sound', 'asset_duration', 'asset_size',
                          'secondary_asset_id', 'physical_asset_barcode', 'date_value', 'asset_creation_date',
-                         'brand_stock', 'size_type', 'base_substrate']
+                         'brand_stock', 'size_type', 'size_value', 'base_substrate']
         link_field_attrs = ['DigitalAsset', 'PhysicalAsset', 'PhysicalFormat',
                             'LocationPrep', 'LocationDelivery', 'Collection',
-                            'Container']
+                            'Container', 'Generation']
         for attr_name, mapping in field_map.items():
             try:
                 assert mapping['xlsx']
@@ -310,9 +330,10 @@ class AVMPIAirtableRecord:
                                  "2. add it to the list of values in that Airtable field")
                 logger.warning(f"problem value: {problem_value}")
                 input("Press any key to exit")
+                exit()
             else:
                 logger.exception(exc, stack_info=True)
-            raise RuntimeError("there was a problem saving that record")
+                raise RuntimeError("there was a problem saving that record")
 
     def send(self) -> Self:
         '''
@@ -365,6 +386,8 @@ class PhysicalAssetRecord(Model, AVMPIAirtableRecord):
                 vars()[field] = fields.DateField(field_name)
             elif field_type == 'barcode':
                 vars()[field] = fields.BarcodeField(field_name)
+            #elif field_type == 'duration':
+            #    vars()[field] == fields.DurationField(field_name)
         except (KeyError, TypeError) as exc:
             vars()[field] = fields.TextField(mapping['atbl'])
 
@@ -596,6 +619,19 @@ class ContainerRecord(Model, AVMPIAirtableRecord):
             return get_api_key() 
 
 
+class GenerationRecord(Model, AVMPIAirtableRecord):
+    '''
+    bare-bones class for representing Generations
+    '''
+    class Meta:
+        base_id = 'appU0Fh8L9xVZBeok'
+        table_name = 'Generations'
+
+        @staticmethod
+        def api_key():
+            return get_api_key()
+
+
 def set_link_fields():
     '''
     adds class attributes for above classes for link fields
@@ -610,6 +646,7 @@ def set_link_fields():
     setattr(DigitalAssetRecord, 'PhysicalAsset', fields.LinkField('Original Physical Asset', PhysicalAssetRecord))
     setattr(DigitalAssetRecord, 'Container', fields.LinkField('Container', ContainerRecord))
     setattr(PhysicalAssetActionRecord, 'PhysicalAsset', fields.LinkField('Asset', PhysicalAssetRecord))
+    setattr(PhysicalAssetRecord, 'Generation', fields.LinkField('Generation', GenerationRecord))
 
 
 set_link_fields()
