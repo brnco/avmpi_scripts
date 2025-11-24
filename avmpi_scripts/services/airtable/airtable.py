@@ -682,7 +682,6 @@ def find(query: Any, field: str, table: Table,
     logger.info(f"in field: {field}")
     logger.info(type(table))
     logger.info(table.__dict__)
-    input("yo")
     try:
         results = table.all(formula=match({field: query}))
         if results:
