@@ -6,6 +6,7 @@ import json
 import logging
 import pathlib
 import argparse
+from datetime import datetime
 from pprint import pformat
 import services.airtable.airtable as airtable
 from pyairtable import Base
@@ -69,26 +70,31 @@ def send_results_to_airtable(passes: list, fails: list):
     logger.info("sending results to Airtable...")
     atbl_base = airtable.connect_one_base('Assets')
     atbl_tbl = atbl_base['QC Log']
+    today = datetime.today().strftime('%Y-%m-%d') 
     for passed_file in passes:
         result = airtable.find(passed_file['daid'], "Digital Asset", atbl_tbl, True)
         if result:
             logger.info(f"updating QC Log record for {passed_file['daid']}")
-            atbl_tbl.update(result['id'], {"MediaConch": ["Pass"], "QC Issues": ""})
+            atbl_tbl.update(result['id'], {"MediaConch": "Pass", "QC Issues": "",
+                                           "QC Start": today})
         else:
             logger.info(f"creating new QC Log record for {passed_file['daid']}")
             atbl_rec_digital_asset = get_linked_digital_asset_record(passed_file['daid'], atbl_base)
             atbl_tbl.create({"Digital Asset": [atbl_rec_digital_asset['id']],
-                             "MediaConch": ["Pass"], "QC Issues": ""})
+                             "MediaConch": "Pass", "QC Issues": "",
+                             "QC Start": today})
     for failed_file in fails:
         result = airtable.find(failed_file['daid'], "Digital Asset", atbl_tbl, True)
         if result:
             logger.info(f"updating QC Log record for {failed_file['daid']}")
-            atbl_tbl.update(result['id'], {"MediaConch": ["Fail"], "QC Issues": failed_file['log']})
+            atbl_tbl.update(result['id'], {"MediaConch": "Fail", "QC Issues": failed_file['log'],
+                                           "QC Start": today})
         else:
             logger.info(f"creating new QC Log record for {failed_file['daid']}")
             atbl_rec_digital_asset = get_linked_digital_asset_record(failed_file['daid'], atbl_base)
             atbl_tbl.create({"Digital Asset": [atbl_rec_digital_asset['id']],
-                             "MediaConch": ['Fail'], "QC Issues": failed_file['log']})
+                             "MediaConch": ['Fail'], "QC Issues": failed_file['log'],
+                             "QC Start": today})
 
 
 def detect_policy_for_file(file: str, conf: dict) -> pathlib.Path:
