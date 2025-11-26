@@ -63,7 +63,7 @@ def get_linked_digital_asset_record(daid: str, atbl_base: Base):
         raise RuntimeError(f"no asset found in {atbl_tbl} with Digital Asset ID {daid}")
 
 
-def send_results_to_airtable(passes: list, fails: list):
+def send_results_to_airtable(passes: list, fails: list, inprogress: list):
     '''
     actually sends the results of the validation to Airtable QC Log
     '''
@@ -93,7 +93,19 @@ def send_results_to_airtable(passes: list, fails: list):
             logger.info(f"creating new QC Log record for {failed_file['daid']}")
             atbl_rec_digital_asset = get_linked_digital_asset_record(failed_file['daid'], atbl_base)
             atbl_tbl.create({"Digital Asset": [atbl_rec_digital_asset['id']],
-                             "MediaConch": ['Fail'], "QC Issues": failed_file['log'],
+                             "MediaConch": 'Fail', "QC Issues": failed_file['log'],
+                             "QC Start": today})
+    for inprog_file in inprogress:
+        result = airtable.find(inprog_file['daid'], "Digital Asset", atbl_tbl, True)
+        if result:
+            logger.info(f"updating QC Log record for {inprog_file['daid']}")
+            atbl_tbl.update(result['id'], {"MediaConch": "In Progress", "QC Issues": inprog_file['log'],
+                                           "QC Start": today})
+        else:
+            logger.info(f"creating new QC Log record for {inprog_file['daid']}")
+            atbl_rec_digital_asset = get_linked_digital_asset_record(inprog_file['daid'], atbl_base)
+            atbl_tbl.create({"Digital Asset": [atbl_rec_digital_asset['id']],
+                             "MediaConch": 'In Progress', "QC Issues": inprog_file['log'],
                              "QC Start": today})
 
 
@@ -134,22 +146,25 @@ def review_failed_files(failed_files: list) -> tuple[list, list]:
     '''
     rev_fails = []
     rev_passes = []
+    rev_inprogress = []
     for failed_file in failed_files:
         _log_lst = failed_file['log'].split("  --  ")
         log_list = [x.strip() for x in _log_lst]
         logger.warning(f"Digital Asset ID: {failed_file['daid']}")
         logger.warning(pformat(log_list))
         while True:
-            user_input = input("press F to Fail this file, press P to Pass it: ").upper()
-            if user_input not in ['F', 'P']:
-                print("invalid choice, please type F or P")
+            user_input = input("press F to Fail this file, press P to Pass it, press I to mark it In-Progress: ").upper()
+            if user_input not in ['F', 'P', 'I']:
+                print("invalid choice, please type F or P or I")
             else:
                 break
         if user_input == "F":
             rev_fails.append(failed_file)
-        else:
+        elif user_input == "P":
             rev_passes.append({"daid": failed_file['daid']})
-    return rev_passes, rev_fails
+        elif user_input == "I":
+            rev_inprogress.append(failed_file)
+    return rev_passes, rev_fails, rev_inprogress
 
 
 def validate_media(kwvars: dict):
@@ -191,23 +206,38 @@ def validate_media(kwvars: dict):
             else:
                 break
         if user_input == 'y':
-            reviewed_passes, reviewed_fails = review_failed_files(fails)
-            passes.extend(reviewed_passes)
+            reviewed_passes, reviewed_fails, reviewed_inprogress = review_failed_files(fails)
+            reviewed_passes.extend(passes)
         else:
             reviewed_fails = fails
             reviewed_passes = passes
+            reviewed_inprogress = []
     else:
         reviewed_fails = []
         reviewed_passes = passes
-    formatted_passes = [item['daid'] for item in passes]
-    formatted_fails = [item['daid'] for item in fails]
-    logger.info("here's the Digital Asset IDs for passing files:")
-    logger.info(pformat(formatted_passes))
-    input("press any key to continue")
-    logger.info("here's the Digital Asset IDs for failing files:")
-    logger.info(pformat(formatted_fails))
-    input("press any key to continue")
-    send_results_to_airtable(reviewed_passes, reviewed_fails)
+        reviewed_inprogress = []
+    formatted_passes = [item['daid'] for item in reviewed_passes]
+    formatted_fails = [item['daid'] for item in reviewed_fails]
+    formatted_inprogress = [item['daid'] for item in reviewed_inprogress]
+    if formatted_passes:
+        logger.info("here's the Digital Asset IDs for passing files:")
+        logger.info(pformat(formatted_passes))
+        input("press any key to continue")
+    else:
+        logger.info("no passing files :(")
+    if formatted_fails:
+        logger.info("here's the Digital Asset IDs for failing files:")
+        logger.info(pformat(formatted_fails))
+        input("press any key to continue")
+    else:
+        logger.info("no failing files :)")
+    if formatted_inprogress:
+        logger.info("here's the Digital Asset IDs for in progress files:")
+        logger.info(pformat(formatted_inprogress))
+        input("press any key to continue")
+    else:
+        logger.info("no in progress files :|")
+    send_results_to_airtable(reviewed_passes, reviewed_fails, reviewed_inprogress)
 
 
 def parse_args(args: argparse.Namespace) -> dict:
