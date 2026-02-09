@@ -174,7 +174,7 @@ class BroadcastWaveFile(object):
             if isinstance(value, list):
                 if len(value) == 1:
                     value = value[0]
-            setattr(instance, field, value)
+            setattr(instance, field, value.replace("\n", "")
         setattr(instance, 'OriginationDate', 'TIMESTAMP')
         setattr(instance, 'OriginationTime', 'TIMESTAMP')
         return instance
