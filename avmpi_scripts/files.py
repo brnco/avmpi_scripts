@@ -49,7 +49,7 @@ class BWFDescription(object):
             except Exception:
                 raise RuntimeError(f"returned Digital Asset Record missing field {field}")
             try:
-                value = mapping['atbl']['prefix'] + value
+                value = mapping['atbl']['prefix'] + str(value)
             except (KeyError, TypeError):
                 pass
             setattr(instance, field, value)
@@ -60,6 +60,7 @@ class BWFDescription(object):
             except Exception:
                 pass
             every_descriptor.append(value)
+        print(every_descriptor)
         description = '; '.join(every_descriptor)
         setattr(instance, "Description", description[:256])
         return instance
