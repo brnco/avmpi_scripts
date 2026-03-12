@@ -1,6 +1,7 @@
 '''
 object classes for files on disk
 '''
+from pprint import pprint
 import json
 import logging
 import pathlib
@@ -153,6 +154,7 @@ class BroadcastWaveFile(object):
         atbl_tbl = atbl_base['Digital Assets']
         # results = atbl_tbl.first()
         atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
+        pprint(atbl_rec_digital_asset.__dict__())
         if not atbl_rec_digital_asset:
             raise RuntimeError(f"no records found for Digital Asset ID {digital_asset_id}")
         for field, mapping in field_map.items():
