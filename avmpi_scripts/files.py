@@ -154,7 +154,6 @@ class BroadcastWaveFile(object):
         atbl_tbl = atbl_base['Digital Assets']
         # results = atbl_tbl.first()
         atbl_rec_digital_asset = airtable.find(digital_asset_id, "Digital Asset ID", atbl_tbl, True)
-        pprint(atbl_rec_digital_asset.__dir__())
         if not atbl_rec_digital_asset:
             raise RuntimeError(f"no records found for Digital Asset ID {digital_asset_id}")
         for field, mapping in field_map.items():
@@ -178,6 +177,8 @@ class BroadcastWaveFile(object):
                     value = value[0]
             if "\n" in value and not field == "History":
                 setattr(instance, field, value.replace("\n", ""))
+            else:
+                setattr(instance, field, value)
         setattr(instance, 'OriginationDate', 'TIMESTAMP')
         setattr(instance, 'OriginationTime', 'TIMESTAMP')
         return instance
