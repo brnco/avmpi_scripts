@@ -90,10 +90,7 @@
         },
         "asset_barcode": {
             "xlsx": "M",
-            "atbl": {
-                "name": "Asset Barcode",
-                "type": "barcode"
-            }
+            "atbl": "Asset Barcode"
         },
         "original_container": {
             "xlsx": "N",

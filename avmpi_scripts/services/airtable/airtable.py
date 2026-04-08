@@ -69,7 +69,8 @@ class AVMPIAirtableRecord:
         if attr_name in multi_select_fields:
             value = [val for val in value.split(',')]
         if 'asset_barcode' in attr_name:
-            value = {"text": str(int(value))}
+            #value = {"text": str(int(value))}
+            value = str(int(value))
         if attr_name == 'color' or attr_name == 'sound':
             value = [value]
         if attr_name == 'secondary_asset_id':
