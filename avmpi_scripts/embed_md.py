@@ -18,7 +18,7 @@ def embed_bwf(path: pathlib.Path, metadata: str):
 
     metadata here is a list of BWFMetaEdit flags
     '''
-    cmd = 'bwfmetaedit ' + metadata + ' "' + str(path) + '"'
+    cmd = 'bwfmetaedit --specialchars ' + metadata + ' "' + str(path) + '"'
     util.run_command(cmd)
 
 
@@ -72,9 +72,7 @@ def embed_metadata(kwvars: dict):
         rows = load_bwf_md_from_excel(kwvars)
         process_rows(rows, kwvars)
     elif kwvars['daid']:
-        logger.info("here1")
         bwf = files.BroadcastWaveFile().from_atbl(kwvars['daid'])
-        logger.info("here2")
         if kwvars['dadir']:
             wav_path = pathlib.Path(kwvars['dadir'])
         else:
