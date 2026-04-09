@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<policy type="and" name="BAVC NTSC DV Master (4:3)">
+  <rule name="General/FileExtension is dv" value="FileExtension" tracktype="General" occurrence="*" operator="=">dv</rule>
+  <rule name="General/Format is DV" value="Format" tracktype="General" occurrence="*" operator="=">DV</rule>
+  <rule name="General/OverallBitRate_Mode is CBR" value="OverallBitRate_Mode" tracktype="General" occurrence="*" operator="=">CBR</rule>
+  <rule name="General/FrameRate is 29.970" value="FrameRate" tracktype="General" occurrence="*" operator="=">29.970</rule>
+  <rule name="Video/Format is DV" value="Format" tracktype="Video" occurrence="*" operator="=">DV</rule>
+  <rule name="Video/BitRate_Mode is CBR" value="BitRate_Mode" tracktype="Video" occurrence="*" operator="=">CBR</rule>
+  <rule name="Video/Width is 720" value="Width" tracktype="Video" occurrence="*" operator="=">720</rule>
+  <rule name="Video/Height is 480" value="Height" tracktype="Video" occurrence="*" operator="=">480</rule>
+  <rule name="Video/PixelAspectRatio is 0.889" value="PixelAspectRatio" tracktype="Video" occurrence="*" operator="=">0.889</rule>
+  <rule name="Video/DisplayAspectRatio is 1.333" value="DisplayAspectRatio" tracktype="Video" occurrence="*" operator="=">1.333</rule>
+  <rule name="Video/FrameRate_Mode is CFR" value="FrameRate_Mode" tracktype="Video" occurrence="*" operator="=">CFR</rule>
+  <rule name="Video/FrameRate is 29.970" value="FrameRate" tracktype="Video" occurrence="*" operator="=">29.970</rule>
+  <rule name="Video/Standard is NTSC" value="Standard" tracktype="Video" occurrence="*" operator="=">NTSC</rule>
+  <rule name="Video/BitDepth is 8" value="BitDepth" tracktype="Video" occurrence="*" operator="=">8</rule>
+  <rule name="Video/ScanOrder is BFF" value="ScanOrder" tracktype="Video" occurrence="*" operator="=">BFF</rule>
+  <rule name="Video/Compression_Mode is Lossy" value="Compression_Mode" tracktype="Video" occurrence="*" operator="=">Lossy</rule>
+  <rule name="Audio/Format is PCM" value="Format" tracktype="Audio" occurrence="*" operator="=">PCM</rule>
+  <rule name="Audio/BitRate_Mode is CBR" value="BitRate_Mode" tracktype="Audio" occurrence="*" operator="=">CBR</rule>
+  <rule name="Audio/Channels is 2" value="Channels" tracktype="Audio" occurrence="*" operator="=">2</rule>
+  <policy type="or" name="Sampling Rate is 48000, 44100, or 32000">
+    <rule name="Audio/SamplingRate is 48000" value="SamplingRate" tracktype="Audio" occurrence="*" operator="=">48000</rule>
+    <rule name="Audio/SamplingRate is 44100" value="SamplingRate" tracktype="Audio" occurrence="*" operator="=">44100</rule>
+    <rule name="Audio/SamplingRate is 32000" value="SamplingRate" tracktype="Audio" occurrence="*" operator="=">32000</rule>
+  </policy>
+  <policy type="or" name="Audio Channel is 16 or 12">
+    <rule name="Audio/BitDepth is 16" value="BitDepth" tracktype="Audio" occurrence="*" operator="=">16</rule>
+    <rule name="Audio/BitDepth is 12" value="BitDepth" tracktype="Audio" occurrence="*" operator="=">12</rule>
+  </policy>
+  <policy type="or" name="Chroma Subsampling is 4:1:1 or 4:2:0">
+    <rule name="Video/ChromaSubsampling is 4:1:1" value="ChromaSubsampling" tracktype="Video" occurrence="*" operator="=">4:1:1</rule>
+    <rule name="Video/ChromaSubsampling is 4:2:0" value="ChromaSubsampling" tracktype="Video" occurrence="*" operator="=">4:2:0</rule>
+    <rule name="Video/ScanType is Interlaced" value="ScanType" tracktype="Video" occurrence="*" operator="=">Interlaced</rule>
+  </policy>
+</policy>
