@@ -274,7 +274,7 @@ def init_args() -> argparse.Namespace:
                         help="run script in verbose mode. "
                         "print all log messages to command line")
     parser.add_argument('-daid', '--digital_asset_id', dest='daid', default=None,
-                        help="the Digital Asset ID we would like to embed metadata for")
+                        help="the Digital Asset ID/ filename we would like to validate")
     parser.add_argument('-dadir', '--digital_asset_directory', dest='dadir', default=None,
                         help="the directory where the Digital Asset is located")
     parser.add_argument('-p', '--policy', dest='policy', default=None,

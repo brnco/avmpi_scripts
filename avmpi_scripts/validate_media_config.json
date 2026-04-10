@@ -1,6 +1,6 @@
 {
     "policies": {
-        ".dv": "/home/bcoates/code/extra_avmpi_assets/BAVC NTSC DV Master (4_3).xml",
-        ".mkv": "/home/bcoates/code/extra_avmpi_assets/AVMPI Policy - FFV1 MKV Video Master.xml"
+        ".dv": "C:/Users/bcoates/code/avmpi_scripts/avmpi_scripts/services/mediaconch/BAVC NTSC DV Master (4_3).xml",
+        ".mkv": "C:/Users/bcoates/code/avmpi_scripts/avmpi_scripts/services/mediaconch/AVMPI Policy - FFV1 MKV Video Master.xml"
     }
 }
