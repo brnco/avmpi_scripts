@@ -175,8 +175,12 @@ class BroadcastWaveFile(object):
             if isinstance(value, list):
                 if len(value) == 1:
                     value = value[0]
+            print(field)
+            print(repr(value))
             if "\n" in value and not field == "History":
                 setattr(instance, field, value.replace("\n", ""))
+            elif field == "History":
+                setattr(instance, field, repr(value))
             else:
                 setattr(instance, field, value)
         setattr(instance, 'OriginationDate', 'TIMESTAMP')
