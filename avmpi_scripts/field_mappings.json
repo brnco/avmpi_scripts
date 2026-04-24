@@ -350,7 +350,8 @@
             "xlsx": {
                 "column": "P",
                 "required": true
-            }
+            },
+            "atbl": "IARL (BWF)"
         },
         "ICMT": {
             "xlsx": "Q",
